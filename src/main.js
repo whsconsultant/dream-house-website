@@ -31,7 +31,7 @@ renderer.shadowMap.type = THREE.PCFSoftShadowMap
 const scene = new THREE.Scene()
 scene.fog = new THREE.FogExp2(0xb8cce0, 0.0018)
 
-const camera = new THREE.PerspectiveCamera(62, window.innerWidth / window.innerHeight, 0.1, 700)
+const camera = new THREE.PerspectiveCamera(62, window.innerWidth / window.innerHeight, 0.1, 900)
 camera.position.set(0, 1.65, 22)
 
 createSky(scene)
@@ -63,9 +63,9 @@ const orbitControls = new OrbitControls(camera, canvas)
 orbitControls.enableDamping = true
 orbitControls.dampingFactor = 0.06
 orbitControls.maxPolarAngle = Math.PI * 0.49
-orbitControls.minDistance = 14
-orbitControls.maxDistance = 220
-orbitControls.target.set(0, 4, -2)
+orbitControls.minDistance = 18
+orbitControls.maxDistance = 280
+orbitControls.target.set(0, 5, -4)
 orbitControls.enabled = false
 
 let mode = 'orbit'
@@ -79,14 +79,14 @@ const keys = { forward: false, back: false, left: false, right: false }
 const clock = new THREE.Clock()
 
 const bounds = {
-  minX: -46,
-  maxX: 46,
-  minZ: -56,
-  maxZ: 32,
+  minX: -62,
+  maxX: 62,
+  minZ: -86,
+  maxZ: 50,
 }
 
 function eyeHeight() {
-  return eyeFloor === 0 ? 1.65 : LEVEL.L2 + 1.65
+  return eyeFloor === 0 ? 1.7 : LEVEL.L2 + 1.7
 }
 
 function buildRoomNav() {
@@ -138,17 +138,17 @@ function nearestRoomIndex() {
   return best
 }
 
-/** Walk height follows stair band near x≈10, z 9..18 */
+/** Walk height follows stair band near x≈14, z 14..26 */
 function updateFloorFromStairs() {
   const onStair =
-    camera.position.x > 7.5 &&
-    camera.position.x < 12.5 &&
-    camera.position.z < 19 &&
-    camera.position.z > 8.5
+    camera.position.x > 11.5 &&
+    camera.position.x < 16.5 &&
+    camera.position.z < 27 &&
+    camera.position.z > 13.5
 
   if (onStair) {
-    const t = THREE.MathUtils.clamp((18 - camera.position.z) / 7.2, 0, 1)
-    camera.position.y = 1.65 + t * LEVEL.L2
+    const t = THREE.MathUtils.clamp((26 - camera.position.z) / 8.0, 0, 1)
+    camera.position.y = 1.7 + t * LEVEL.L2
     eyeFloor = t > 0.55 ? 1 : 0
     return true
   }
@@ -156,13 +156,13 @@ function updateFloorFromStairs() {
   if (
     eyeFloor === 0 &&
     camera.position.y > LEVEL.L2 * 0.55 &&
-    camera.position.z < 10.5 &&
-    camera.position.x > 7 &&
-    camera.position.x < 13
+    camera.position.z < 15 &&
+    camera.position.x > 11 &&
+    camera.position.x < 17
   ) {
     eyeFloor = 1
   }
-  if (eyeFloor === 1 && camera.position.z > 17.5 && camera.position.x > 7 && camera.position.x < 13) {
+  if (eyeFloor === 1 && camera.position.z > 25 && camera.position.x > 11 && camera.position.x < 17) {
     eyeFloor = 0
   }
   return false
@@ -197,8 +197,8 @@ function setMode(next) {
     crosshair.classList.add('is-hidden')
     canvas.classList.remove('is-locked')
     if (camera.position.y < 4) {
-      camera.position.set(55, 28, 70)
-      orbitControls.target.set(0, 5, -6)
+      camera.position.set(75, 36, 95)
+      orbitControls.target.set(0, 6, -10)
     }
   }
 }
@@ -307,24 +307,24 @@ function updateWalk(delta) {
   }
 }
 
-camera.position.set(58, 24, 72)
-camera.lookAt(0, 5, -6)
-orbitControls.target.set(0, 5, -6)
+camera.position.set(80, 32, 100)
+camera.lookAt(0, 6, -10)
+orbitControls.target.set(0, 6, -10)
 orbitControls.enabled = true
 mode = 'orbit'
 
-let idleAngle = 0.4
+let idleAngle = 0.35
 
 function animate() {
   requestAnimationFrame(animate)
   const delta = Math.min(clock.getDelta(), 0.05)
 
   if (!started) {
-    idleAngle += delta * 0.06
-    camera.position.x = Math.cos(idleAngle) * 75
-    camera.position.z = Math.sin(idleAngle) * 75
-    camera.position.y = 22 + Math.sin(idleAngle * 0.65) * 3
-    orbitControls.target.set(0, 5, -6)
+    idleAngle += delta * 0.05
+    camera.position.x = Math.cos(idleAngle) * 105
+    camera.position.z = Math.sin(idleAngle) * 105
+    camera.position.y = 30 + Math.sin(idleAngle * 0.65) * 4
+    orbitControls.target.set(0, 6, -10)
     orbitControls.update()
   } else if (mode === 'walk' && walkControls.isLocked) {
     updateWalk(delta)

@@ -10,12 +10,15 @@ const COLORS = {
   glass: 0xa8c8e0,
   water: 0x4a90a8,
   waterDeep: 0x2f6f88,
+  waterLeisure: 0x5aa8b8,
   stone: 0x9a968e,
+  tile: 0xd8e4ea,
   velvet: 0x3a4554,
   linen: 0xefe8dc,
   marble: 0xeeeae2,
   ceiling: 0xfaf8f4,
   green: 0x3d5c45,
+  seat: 0xc4b8a8,
 }
 
 function mat(color, opts = {}) {
@@ -46,31 +49,33 @@ function cyl(rTop, rBot, h, material, x, y, z, parent, segments = 24) {
 }
 
 export const LEVEL = {
-  H: 4.8,
-  L2: 5.0,
+  H: 5.2, // taller halls for pool pavilion
+  L2: 5.4,
 }
 
 /**
- * Crown duplex ~96m × 68m plate (~40,000+ sq ft across two levels).
- * Indoor lap pool + outdoor infinity pool. +Z entrance · −Z terrace.
+ * Crown duplex referenced to Tuen Mun pool complexes:
+ * Indoor heated 50×25 main + 25×15 training; outdoor leisure, 25×12.5 teaching/training, diving spa.
+ * Plate ~130m × 105m (~90,000+ sq ft across two levels).
  */
 export const ROOMS = [
-  { id: 'foyer', name: 'Grand Foyer', position: new THREE.Vector3(0, 1.65, 28), lookAt: new THREE.Vector3(0, 3, 4) },
-  { id: 'living', name: 'Great Room', position: new THREE.Vector3(0, 1.65, 4), lookAt: new THREE.Vector3(0, 2, -14) },
-  { id: 'dining', name: 'Dining Hall', position: new THREE.Vector3(22, 1.65, 6), lookAt: new THREE.Vector3(28, 1.5, 6) },
-  { id: 'kitchen', name: 'Chef Kitchen', position: new THREE.Vector3(34, 1.65, -8), lookAt: new THREE.Vector3(38, 1.5, -14) },
-  { id: 'media', name: 'Cinema Lounge', position: new THREE.Vector3(34, 1.65, 18), lookAt: new THREE.Vector3(36, 1.5, 20) },
-  { id: 'library', name: 'Library', position: new THREE.Vector3(-34, 1.65, 18), lookAt: new THREE.Vector3(-36, 1.5, 20) },
-  { id: 'guest', name: 'Guest Wing', position: new THREE.Vector3(-30, 1.65, -6), lookAt: new THREE.Vector3(-34, 1.5, -12) },
-  { id: 'spa', name: 'Wellness Spa', position: new THREE.Vector3(-36, 1.65, -22), lookAt: new THREE.Vector3(-38, 1.5, -24) },
-  { id: 'indoorpool', name: 'Indoor Pool', position: new THREE.Vector3(30, 1.65, -22), lookAt: new THREE.Vector3(34, 1.5, -26) },
-  { id: 'terrace', name: 'Outdoor Pool', position: new THREE.Vector3(0, 1.65, -38), lookAt: new THREE.Vector3(0, 1.5, -48) },
-  { id: 'stairs', name: 'Grand Stair', position: new THREE.Vector3(10, 1.65, 16), lookAt: new THREE.Vector3(10, 5, 10) },
-  { id: 'master', name: 'Master Suite', position: new THREE.Vector3(-24, LEVEL.L2 + 1.65, -8), lookAt: new THREE.Vector3(-30, LEVEL.L2 + 1.5, -12) },
-  { id: 'dressing', name: 'Dressing Gallery', position: new THREE.Vector3(-34, LEVEL.L2 + 1.65, 4), lookAt: new THREE.Vector3(-36, LEVEL.L2 + 1.5, 4) },
-  { id: 'gym', name: 'Sky Gym', position: new THREE.Vector3(30, LEVEL.L2 + 1.65, -10), lookAt: new THREE.Vector3(34, LEVEL.L2 + 1.5, -12) },
-  { id: 'skylounge', name: 'Sky Lounge', position: new THREE.Vector3(0, LEVEL.L2 + 1.65, 10), lookAt: new THREE.Vector3(0, LEVEL.L2 + 1.5, 0) },
-  { id: 'roof', name: 'Morning Deck', position: new THREE.Vector3(0, LEVEL.L2 + 1.65, -32), lookAt: new THREE.Vector3(0, LEVEL.L2 + 1.5, -42) },
+  { id: 'foyer', name: 'Grand Foyer', position: new THREE.Vector3(0, 1.7, 42), lookAt: new THREE.Vector3(0, 3, 10) },
+  { id: 'living', name: 'Great Room', position: new THREE.Vector3(0, 1.7, 8), lookAt: new THREE.Vector3(0, 2.5, -16) },
+  { id: 'dining', name: 'Dining Hall', position: new THREE.Vector3(28, 1.7, 12), lookAt: new THREE.Vector3(36, 1.5, 12) },
+  { id: 'kitchen', name: 'Chef Kitchen', position: new THREE.Vector3(48, 1.7, -6), lookAt: new THREE.Vector3(52, 1.5, -12) },
+  { id: 'media', name: 'Cinema Lounge', position: new THREE.Vector3(48, 1.7, 28), lookAt: new THREE.Vector3(50, 1.5, 30) },
+  { id: 'library', name: 'Library', position: new THREE.Vector3(-48, 1.7, 28), lookAt: new THREE.Vector3(-50, 1.5, 30) },
+  { id: 'guest', name: 'Guest Wing', position: new THREE.Vector3(-42, 1.7, -4), lookAt: new THREE.Vector3(-48, 1.5, -10) },
+  { id: 'spa', name: 'Wellness Spa', position: new THREE.Vector3(-50, 1.7, -28), lookAt: new THREE.Vector3(-52, 1.5, -30) },
+  { id: 'indoorpool', name: 'Indoor Main Pool', position: new THREE.Vector3(20, 1.7, -28), lookAt: new THREE.Vector3(30, 2, -28) },
+  { id: 'indoortrain', name: 'Indoor Training', position: new THREE.Vector3(48, 1.7, -42), lookAt: new THREE.Vector3(48, 1.5, -45) },
+  { id: 'outdoor', name: 'Outdoor Pools', position: new THREE.Vector3(0, 1.7, -58), lookAt: new THREE.Vector3(0, 1.5, -70) },
+  { id: 'stairs', name: 'Grand Stair', position: new THREE.Vector3(14, 1.7, 24), lookAt: new THREE.Vector3(14, 5.5, 16) },
+  { id: 'master', name: 'Master Suite', position: new THREE.Vector3(-32, LEVEL.L2 + 1.7, -10), lookAt: new THREE.Vector3(-40, LEVEL.L2 + 1.5, -14) },
+  { id: 'dressing', name: 'Dressing Gallery', position: new THREE.Vector3(-48, LEVEL.L2 + 1.7, 6), lookAt: new THREE.Vector3(-50, LEVEL.L2 + 1.5, 6) },
+  { id: 'gym', name: 'Sky Gym', position: new THREE.Vector3(42, LEVEL.L2 + 1.7, -8), lookAt: new THREE.Vector3(48, LEVEL.L2 + 1.5, -10) },
+  { id: 'skylounge', name: 'Sky Lounge', position: new THREE.Vector3(0, LEVEL.L2 + 1.7, 16), lookAt: new THREE.Vector3(0, LEVEL.L2 + 1.5, 4) },
+  { id: 'roof', name: 'Morning Deck', position: new THREE.Vector3(0, LEVEL.L2 + 1.7, -48), lookAt: new THREE.Vector3(0, LEVEL.L2 + 1.5, -60) },
 ]
 
 export function createPenthouse(scene) {
@@ -87,9 +92,11 @@ export function createPenthouse(scene) {
   const velvetMat = mat(COLORS.velvet, { roughness: 0.9 })
   const linenMat = mat(COLORS.linen, { roughness: 0.8 })
   const stoneMat = mat(COLORS.stone, { roughness: 0.6 })
+  const tileMat = mat(COLORS.tile, { roughness: 0.35, metalness: 0.05 })
   const marbleMat = mat(COLORS.marble, { roughness: 0.22, metalness: 0.12 })
   const ceilingMat = mat(COLORS.ceiling, { roughness: 0.92 })
   const greenMat = mat(COLORS.green, { roughness: 0.9 })
+  const seatMat = mat(COLORS.seat, { roughness: 0.75 })
   const glassMat = new THREE.MeshPhysicalMaterial({
     color: COLORS.glass,
     transmission: 0.82,
@@ -101,37 +108,46 @@ export function createPenthouse(scene) {
     ior: 1.45,
     side: THREE.DoubleSide,
   })
-  const waterMat = new THREE.MeshPhysicalMaterial({
+  const waterMain = new THREE.MeshPhysicalMaterial({
+    color: COLORS.waterDeep,
+    transmission: 0.42,
+    transparent: true,
+    opacity: 0.82,
+    roughness: 0.08,
+    metalness: 0.1,
+    thickness: 1.4,
+  })
+  const waterTrain = new THREE.MeshPhysicalMaterial({
     color: COLORS.water,
+    transmission: 0.48,
+    transparent: true,
+    opacity: 0.78,
+    roughness: 0.1,
+    metalness: 0.08,
+    thickness: 1.0,
+  })
+  const waterLeisure = new THREE.MeshPhysicalMaterial({
+    color: COLORS.waterLeisure,
     transmission: 0.5,
     transparent: true,
-    opacity: 0.72,
+    opacity: 0.75,
     roughness: 0.12,
-    metalness: 0.08,
+    metalness: 0.06,
     thickness: 0.9,
-  })
-  const waterDeepMat = new THREE.MeshPhysicalMaterial({
-    color: COLORS.waterDeep,
-    transmission: 0.4,
-    transparent: true,
-    opacity: 0.8,
-    roughness: 0.1,
-    metalness: 0.1,
-    thickness: 1.2,
   })
 
   const H = LEVEL.H
   const L2 = LEVEL.L2
-  const W = 96
-  const D = 68
+  const W = 130
+  const D = 105
 
-  box(W, 0.45, D, floorMat, 0, -0.22, 0, root)
+  box(W, 0.5, D, floorMat, 0, -0.25, 0, root)
   addUpperFloor(root, floorUpperMat, ceilingMat, L2, H, W, D)
-  box(W - 10, 0.28, D - 22, ceilingMat, 0, L2 + H, -4, root)
+  box(W - 14, 0.3, D - 28, ceilingMat, 0, L2 + H, -6, root)
 
-  // Outdoor terrace decks
-  box(84, 0.35, 24, stoneMat, 0, -0.2, -46, root)
-  box(52, 0.3, 18, stoneMat, 0, L2 - 0.12, -46, root)
+  // Outdoor terrace plate (north)
+  box(118, 0.4, 36, stoneMat, 0, -0.22, -70, root)
+  box(70, 0.32, 24, stoneMat, 0, L2 - 0.14, -68, root)
 
   addGlassEnvelope(root, glassMat, bronzeMat, W, D, L2 + H)
   addL1Partitions(root, wallMat, woodMat, H)
@@ -145,9 +161,12 @@ export function createPenthouse(scene) {
   addMedia(root, velvetMat, woodDarkMat)
   addLibrary(root, woodMat, woodDarkMat, linenMat)
   addGuestWing(root, linenMat, woodMat, velvetMat, wallMat, H)
-  addSpa(root, marbleMat, stoneMat, bronzeMat, waterMat, woodMat)
-  addIndoorPool(root, stoneMat, marbleMat, bronzeMat, waterDeepMat, linenMat, H)
-  addOutdoorPool(root, stoneMat, woodMat, bronzeMat, waterMat, linenMat, greenMat)
+  addSpa(root, marbleMat, stoneMat, bronzeMat, waterTrain, woodMat)
+
+  // Tuen Mun–inspired aquatic wing
+  addIndoorMainPool(root, tileMat, marbleMat, bronzeMat, waterMain, linenMat, seatMat, H)
+  addIndoorTrainingPool(root, tileMat, marbleMat, waterTrain, H)
+  addOutdoorPoolComplex(root, stoneMat, tileMat, woodMat, bronzeMat, waterLeisure, waterTrain, linenMat, greenMat)
 
   addSkyLounge(root, velvetMat, linenMat, woodMat, bronzeMat, L2)
   addMasterSuite(root, linenMat, woodMat, velvetMat, bronzeMat, marbleMat, L2)
@@ -162,19 +181,19 @@ export function createPenthouse(scene) {
 }
 
 function addUpperFloor(root, floorMat, ceilingMat, L2, H, W, D) {
-  box(34, 0.35, D - 2, floorMat, -31, L2 - 0.175, 0, root)
-  box(34, 0.35, D - 2, floorMat, 31, L2 - 0.175, 0, root)
-  box(28, 0.35, 22, floorMat, 0, L2 - 0.175, -22, root)
-  box(28, 0.35, 14, floorMat, 0, L2 - 0.175, 26, root)
-  box(W - 0.5, 0.15, 18, ceilingMat, 0, H - 0.1, -24, root)
-  box(32, 0.15, 36, ceilingMat, -32, H - 0.1, 4, root)
-  box(32, 0.15, 36, ceilingMat, 32, H - 0.1, 4, root)
+  box(46, 0.38, D - 4, floorMat, -42, L2 - 0.19, 0, root)
+  box(46, 0.38, D - 4, floorMat, 42, L2 - 0.19, 0, root)
+  box(36, 0.38, 30, floorMat, 0, L2 - 0.19, -32, root)
+  box(36, 0.38, 18, floorMat, 0, L2 - 0.19, 40, root)
+  box(W - 1, 0.16, 22, ceilingMat, 0, H - 0.1, -36, root)
+  box(42, 0.16, 48, ceilingMat, -44, H - 0.1, 6, root)
+  box(42, 0.16, 48, ceilingMat, 44, H - 0.1, 6, root)
 }
 
 function addGlassEnvelope(root, glassMat, frameMat, W, D, totalH) {
-  const t = 0.14
+  const t = 0.16
   for (const [w, h, d, x, y, z] of [
-    [W - 8, totalH - 0.5, t, 0, totalH / 2, D / 2],
+    [W - 10, totalH - 0.5, t, 0, totalH / 2, D / 2],
     [t, totalH - 0.5, D, W / 2, totalH / 2, 0],
     [t, totalH - 0.5, D, -W / 2, totalH / 2, 0],
   ]) {
@@ -182,292 +201,335 @@ function addGlassEnvelope(root, glassMat, frameMat, W, D, totalH) {
     m.position.set(x, y, z)
     root.add(m)
   }
-  for (const x of [-36, -18, 0, 18, 36]) {
-    const pane = new THREE.Mesh(new THREE.BoxGeometry(14, totalH - 0.5, t), glassMat)
+  for (const x of [-50, -25, 0, 25, 50]) {
+    const pane = new THREE.Mesh(new THREE.BoxGeometry(18, totalH - 0.5, t), glassMat)
     pane.position.set(x, totalH / 2, -D / 2)
     root.add(pane)
   }
-  for (let i = -7; i <= 7; i++) {
-    box(0.22, totalH, 0.22, frameMat, i * 6.5, totalH / 2, D / 2, root)
-    box(0.22, totalH, 0.22, frameMat, i * 6.5, totalH / 2, -D / 2, root)
+  for (let i = -9; i <= 9; i++) {
+    box(0.24, totalH, 0.24, frameMat, i * 6.8, totalH / 2, D / 2, root)
+    box(0.24, totalH, 0.24, frameMat, i * 6.8, totalH / 2, -D / 2, root)
   }
-  for (let i = -4; i <= 4; i++) {
-    box(0.22, totalH, 0.22, frameMat, W / 2, totalH / 2, i * 7.5, root)
-    box(0.22, totalH, 0.22, frameMat, -W / 2, totalH / 2, i * 7.5, root)
+  for (let i = -6; i <= 6; i++) {
+    box(0.24, totalH, 0.24, frameMat, W / 2, totalH / 2, i * 8, root)
+    box(0.24, totalH, 0.24, frameMat, -W / 2, totalH / 2, i * 8, root)
   }
 }
 
 function addL1Partitions(root, wallMat, woodMat, H) {
-  const h = H - 0.35
-  box(0.3, h, 36, wallMat, -18, h / 2, -4, root)
-  box(0.3, h, 30, wallMat, 18, h / 2, -2, root)
-  box(22, h, 0.3, wallMat, 30, h / 2, 8, root)
-  box(22, h, 0.3, wallMat, -30, h / 2, 8, root)
-  box(24, h, 0.3, wallMat, -30, h / 2, -14, root)
-  box(0.3, h, 16, wallMat, -40, h / 2, -24, root)
-  box(0.3, h, 18, wallMat, 20, h / 2, -22, root) // indoor pool wing
-  box(20, h, 0.3, wallMat, 32, h / 2, -14, root)
-  box(14, h * 0.9, 0.24, woodMat, -10, (h * 0.9) / 2, -10, root)
+  const h = H - 0.4
+  box(0.32, h, 48, wallMat, -24, h / 2, -2, root)
+  box(0.32, h, 40, wallMat, 24, h / 2, 0, root)
+  box(28, h, 0.32, wallMat, 42, h / 2, 14, root)
+  box(28, h, 0.32, wallMat, -42, h / 2, 14, root)
+  box(32, h, 0.32, wallMat, -42, h / 2, -16, root)
+  box(0.32, h, 22, wallMat, -56, h / 2, -32, root)
+  // Pool pavilion walls
+  box(0.32, h, 40, wallMat, -8, h / 2, -32, root)
+  box(70, h, 0.32, wallMat, 28, h / 2, -12, root)
+  box(16, h * 0.9, 0.26, woodMat, -12, (h * 0.9) / 2, -12, root)
 }
 
 function addL2Partitions(root, wallMat, woodMat, L2, H) {
-  const h = H - 0.4
+  const h = H - 0.45
   const y = L2 + h / 2
-  box(0.3, h, 30, wallMat, -14, y, -4, root)
-  box(0.3, h, 26, wallMat, 16, y, -2, root)
-  box(18, h, 0.3, wallMat, -32, y, 0, root)
-  box(20, h, 0.3, wallMat, 30, y, 2, root)
-  box(12, h * 0.85, 0.24, woodMat, -26, L2 + (h * 0.85) / 2, -12, root)
+  box(0.32, h, 40, wallMat, -18, y, -4, root)
+  box(0.32, h, 34, wallMat, 22, y, -2, root)
+  box(24, h, 0.32, wallMat, -44, y, 2, root)
+  box(26, h, 0.32, wallMat, 42, y, 4, root)
+  box(14, h * 0.85, 0.26, woodMat, -34, L2 + (h * 0.85) / 2, -14, root)
 }
 
 function addGrandStair(root, marble, bronze, wood, L2) {
-  const steps = 18
+  const steps = 20
   const rise = L2 / steps
   const run = 0.4
   for (let i = 0; i < steps; i++) {
-    box(3.6, rise, run + 0.05, marble, 10, rise * (i + 0.5), 18 - i * run, root)
+    box(4.0, rise, run + 0.05, marble, 14, rise * (i + 0.5), 26 - i * run, root)
   }
-  box(4.6, 0.22, 2.4, marble, 10, L2, 18 - steps * run - 0.7, root)
-  box(0.1, L2 * 0.95, 0.1, bronze, 8, (L2 * 0.95) / 2, 11, root)
-  box(0.1, L2 * 0.95, 0.1, bronze, 12, (L2 * 0.95) / 2, 11, root)
-  for (const x of [-12, 12]) {
-    box(0.12, 1.15, 22, bronze, x, L2 + 0.55, 2, root)
-  }
-  box(24, 1.15, 0.12, bronze, 0, L2 + 0.55, -10, root)
-  box(0.16, L2, 7.5, wood, 7.9, L2 / 2, 14, root)
+  box(5.0, 0.24, 2.6, marble, 14, L2, 26 - steps * run - 0.8, root)
+  box(0.1, L2 * 0.95, 0.1, bronze, 11.8, (L2 * 0.95) / 2, 16, root)
+  box(0.1, L2 * 0.95, 0.1, bronze, 16.2, (L2 * 0.95) / 2, 16, root)
+  for (const x of [-16, 16]) box(0.14, 1.2, 28, bronze, x, L2 + 0.6, 4, root)
+  box(32, 1.2, 0.14, bronze, 0, L2 + 0.6, -14, root)
+  box(0.18, L2, 8.5, wood, 11.7, L2 / 2, 20, root)
 }
 
 function addFoyer(root, marble, bronze, wood, H) {
-  box(14, 0.06, 12, marble, 0, 0.03, 26, root)
-  box(4, 0.95, 0.8, wood, 0, 0.52, 31, root)
-  box(4, 0.08, 0.85, marble, 0, 1.02, 31, root)
-  cyl(0.12, 0.12, 3.2, bronze, 0, H + 1.4, 22, root)
-  cyl(1.1, 0.65, 0.22, bronze, 0, H + 0.15, 22, root)
+  box(18, 0.07, 16, marble, 0, 0.04, 40, root)
+  box(5, 1.0, 0.9, wood, 0, 0.55, 48, root)
+  box(5, 0.08, 0.95, marble, 0, 1.08, 48, root)
+  cyl(0.14, 0.14, 3.6, bronze, 0, H + 1.5, 34, root)
+  cyl(1.3, 0.7, 0.24, bronze, 0, H + 0.1, 34, root)
 }
 
 function addLiving(root, velvet, linen, wood, woodDark, bronze) {
-  box(10, 0.55, 3, velvet, -4, 0.4, 0, root)
-  box(3, 0.55, 7.5, velvet, 3.5, 0.4, -3, root)
-  box(4, 0.1, 1.8, woodDark, -1, 0.42, -6.5, root)
-  box(12, 0.04, 10, linen, 0, 0.02, -2, root)
-  box(7, 1.7, 0.5, wood, 0, 0.95, -15, root)
-  box(4, 1.2, 0.14, bronze, 0, 1.0, -14.7, root)
-  box(1.4, 0.5, 1.4, velvet, 9, 0.35, -7, root)
-  box(1.4, 0.5, 1.4, velvet, 11.5, 0.35, -4.5, root)
+  box(12, 0.58, 3.4, velvet, -5, 0.42, 2, root)
+  box(3.4, 0.58, 9, velvet, 4.5, 0.42, -2, root)
+  box(4.5, 0.12, 2.0, woodDark, -1, 0.45, -8, root)
+  box(14, 0.04, 12, linen, 0, 0.02, 0, root)
+  box(8, 1.8, 0.55, wood, 0, 1.0, -20, root)
+  box(4.5, 1.3, 0.14, bronze, 0, 1.05, -19.7, root)
+  box(1.5, 0.52, 1.5, velvet, 12, 0.36, -8, root)
+  box(1.5, 0.52, 1.5, velvet, 15, 0.36, -5, root)
 }
 
 function addDining(root, woodDark, linen, bronze) {
-  box(7, 0.12, 1.8, woodDark, 24, 0.78, 4, root)
-  box(6.4, 0.1, 0.2, bronze, 24, 0.4, 4, root)
-  for (let i = -4; i <= 4; i++) {
-    box(0.5, 0.55, 0.5, linen, 24 + i * 0.72, 0.4, 2.8, root)
-    box(0.5, 0.55, 0.5, linen, 24 + i * 0.72, 0.4, 5.2, root)
+  box(8.5, 0.12, 2.0, woodDark, 32, 0.8, 10, root)
+  box(8, 0.1, 0.22, bronze, 32, 0.42, 10, root)
+  for (let i = -5; i <= 5; i++) {
+    box(0.52, 0.55, 0.52, linen, 32 + i * 0.72, 0.4, 8.7, root)
+    box(0.52, 0.55, 0.52, linen, 32 + i * 0.72, 0.4, 11.3, root)
   }
-  box(4.2, 1.05, 0.6, woodDark, 24, 0.55, -1.5, root)
+  box(5, 1.1, 0.65, woodDark, 32, 0.58, 4, root)
 }
 
 function addKitchen(root, marble, wood, bronze, stone) {
-  box(8, 0.95, 1.8, marble, 34, 0.55, -8, root)
-  box(8, 0.08, 1.85, bronze, 34, 1.05, -8, root)
-  for (const z of [-7, -8, -9]) {
-    cyl(0.25, 0.25, 0.08, wood, 30.5, 0.72, z, root)
-    cyl(0.05, 0.05, 0.65, bronze, 30.5, 0.35, z, root)
+  box(10, 0.95, 2.0, marble, 48, 0.55, -6, root)
+  box(10, 0.08, 2.05, bronze, 48, 1.08, -6, root)
+  for (const z of [-5, -6, -7]) {
+    cyl(0.26, 0.26, 0.08, wood, 43.5, 0.74, z, root)
+    cyl(0.05, 0.05, 0.65, bronze, 43.5, 0.36, z, root)
   }
-  box(16, 0.95, 0.8, stone, 36, 0.55, -18, root)
-  box(0.8, 0.95, 12, stone, 43, 0.55, -12, root)
-  box(16, 1.05, 0.55, wood, 36, 3.0, -18.1, root)
-  box(1.5, 2.4, 1.0, stone, 42.5, 1.3, -4, root)
+  box(20, 0.95, 0.85, stone, 50, 0.55, -18, root)
+  box(0.85, 0.95, 14, stone, 58, 0.55, -10, root)
+  box(20, 1.1, 0.55, wood, 50, 3.2, -18.1, root)
 }
 
 function addMedia(root, velvet, woodDark) {
-  box(7.5, 0.5, 3.5, velvet, 34, 0.35, 18, root)
-  box(8.5, 0.05, 4, woodDark, 34, 0.05, 18.2, root)
-  box(6.5, 2.8, 0.16, woodDark, 34, 1.8, 26, root)
-  box(6, 2.4, 0.06, mat(0x151820, { roughness: 0.35, metalness: 0.25 }), 34, 1.8, 25.9, root)
+  box(9, 0.52, 4, velvet, 48, 0.36, 28, root)
+  box(10, 0.05, 4.5, woodDark, 48, 0.05, 28.2, root)
+  box(7.5, 3.0, 0.16, woodDark, 48, 1.9, 38, root)
+  box(7, 2.6, 0.06, mat(0x151820, { roughness: 0.35, metalness: 0.25 }), 48, 1.9, 37.9, root)
 }
 
 function addLibrary(root, wood, woodDark, linen) {
-  box(3.4, 0.1, 1.2, woodDark, -34, 0.78, 18, root)
-  box(0.8, 0.55, 0.8, linen, -34, 0.4, 16.2, root)
-  box(0.5, 3.4, 10, wood, -45, 1.8, 18, root)
-  for (let i = 0; i < 7; i++) {
-    box(0.45, 0.05, 9.5, woodDark, -44.95, 0.45 + i * 0.48, 18, root)
+  box(3.6, 0.1, 1.3, woodDark, -48, 0.8, 28, root)
+  box(0.85, 0.55, 0.85, linen, -48, 0.4, 26, root)
+  box(0.55, 3.6, 12, wood, -62, 1.9, 28, root)
+  for (let i = 0; i < 8; i++) {
+    box(0.5, 0.05, 11.5, woodDark, -61.95, 0.45 + i * 0.45, 28, root)
   }
-  box(1.2, 0.5, 1.2, linen, -28, 0.35, 20, root)
-  box(1.2, 0.5, 1.2, linen, -31, 0.35, 22, root)
+  box(1.3, 0.5, 1.3, linen, -40, 0.35, 30, root)
+  box(1.3, 0.5, 1.3, linen, -44, 0.35, 33, root)
 }
 
 function addGuestWing(root, linen, wood, velvet, wallMat, H) {
   const rooms = [
-    [-36, -18],
-    [-28, -18],
-    [-20, -18],
-    [-12, -18],
+    [-52, -22],
+    [-42, -22],
+    [-32, -22],
+    [-22, -22],
   ]
   for (const [x, z] of rooms) {
-    box(2.2, 0.42, 2.4, wood, x, 0.35, z, root)
-    box(2.1, 0.32, 2.25, linen, x, 0.68, z, root)
-    box(2.2, 0.85, 0.24, velvet, x, 0.9, z + 1.25, root)
-    box(0.24, H - 0.4, 5.5, wallMat, x + 3.5, (H - 0.4) / 2, z, root)
+    box(2.4, 0.42, 2.5, wood, x, 0.35, z, root)
+    box(2.3, 0.32, 2.35, linen, x, 0.68, z, root)
+    box(2.4, 0.85, 0.24, velvet, x, 0.9, z + 1.3, root)
+    box(0.26, H - 0.45, 6, wallMat, x + 4, (H - 0.45) / 2, z, root)
   }
 }
 
 function addSpa(root, marble, stone, bronze, water, wood) {
-  cyl(1.4, 1.3, 0.6, marble, -40, 0.38, -26, root, 36)
-  const soak = new THREE.Mesh(new THREE.CylinderGeometry(1.2, 1.2, 0.14, 36), water)
-  soak.position.set(-40, 0.58, -26)
+  cyl(1.5, 1.35, 0.6, marble, -54, 0.38, -34, root, 36)
+  const soak = new THREE.Mesh(new THREE.CylinderGeometry(1.25, 1.25, 0.14, 36), water)
+  soak.position.set(-54, 0.58, -34)
   root.add(soak)
-  box(4.5, 0.9, 0.7, stone, -44, 0.5, -30, root)
-  box(4.5, 0.06, 0.7, marble, -44, 0.98, -30, root)
-  box(2.6, 2.8, 2.6, stone, -34, 1.5, -30, root)
-  box(0.1, 0.55, 0.1, bronze, -34, 2.7, -30, root)
-  box(3.5, 2.5, 3.0, wood, -45, 1.35, -20, root)
+  box(5, 0.9, 0.75, stone, -58, 0.5, -40, root)
+  box(5, 0.06, 0.75, marble, -58, 0.98, -40, root)
+  box(2.8, 2.9, 2.8, stone, -46, 1.55, -40, root)
+  box(3.8, 2.6, 3.2, wood, -60, 1.4, -26, root)
 }
 
-/** Indoor 25m-style lap pool pavilion on the east wing. */
-function addIndoorPool(root, stone, marble, bronze, water, linen, H) {
-  // Pool hall shell
-  box(22, 0.08, 14, stone, 34, 0.04, -26, root)
-  // Basin
-  box(20, 1.15, 7.5, stone, 34, 0.2, -26, root)
-  const waterMesh = new THREE.Mesh(new THREE.BoxGeometry(18.5, 0.55, 6.2), water)
-  waterMesh.position.set(34, 0.45, -26)
+/**
+ * Indoor heated main pool — Tuen Mun standard 50×25m with lane lines + guest gallery.
+ */
+function addIndoorMainPool(root, tile, marble, bronze, water, linen, seat, H) {
+  const cx = 28
+  const cz = -32
+  // Deck / wet floor
+  box(62, 0.1, 38, tile, cx, 0.05, cz, root)
+  // Basin shell 50×25
+  box(52, 1.4, 27, tile, cx, 0.15, cz, root)
+  const waterMesh = new THREE.Mesh(new THREE.BoxGeometry(50, 0.7, 25), water)
+  waterMesh.position.set(cx, 0.55, cz)
   root.add(waterMesh)
-  // Lane markers
-  for (const x of [28, 31, 34, 37, 40]) {
-    box(0.08, 0.02, 6, marble, x, 0.72, -26, root)
+  // 8 lane markers (competition-style)
+  for (let i = -3.5; i <= 3.5; i++) {
+    box(50, 0.02, 0.12, marble, cx, 0.9, cz + i * 3.1, root)
+  }
+  // Starting block plinths
+  for (let i = -3.5; i <= 3.5; i++) {
+    box(0.55, 0.35, 0.55, marble, cx - 24.2, 1.05, cz + i * 3.1, root)
+    box(0.55, 0.35, 0.55, marble, cx + 24.2, 1.05, cz + i * 3.1, root)
   }
   // Coping
-  box(21, 0.12, 0.45, marble, 34, 0.85, -22.4, root)
-  box(21, 0.12, 0.45, marble, 34, 0.85, -29.6, root)
-  // Lounge chairs along the pool
-  for (const x of [25, 27.5, 41, 43.5]) {
-    box(0.85, 0.28, 2.1, linen, x, 0.28, -21, root)
-    box(0.85, 0.55, 0.35, linen, x, 0.5, -20.2, root)
+  box(53, 0.14, 0.5, marble, cx, 0.95, cz - 13.2, root)
+  box(53, 0.14, 0.5, marble, cx, 0.95, cz + 13.2, root)
+  // Guest gallery / mini stand (residential, not 1200 seats)
+  for (let row = 0; row < 4; row++) {
+    box(40, 0.35, 0.9, seat, cx, 0.4 + row * 0.38, cz + 16.5 + row * 0.85, root)
   }
-  // Skylight strip suggestion
-  const glow = mat(0xfff0d8, { roughness: 1, emissive: 0xffe0a8, emissiveIntensity: 0.7 })
-  box(16, 0.08, 1.2, glow, 34, H - 0.2, -26, root)
-  // Columns
-  for (const x of [24.5, 43.5]) {
-    cyl(0.28, 0.28, H - 0.4, bronze, x, (H - 0.4) / 2, -20.5, root)
-    cyl(0.28, 0.28, H - 0.4, bronze, x, (H - 0.4) / 2, -31.5, root)
+  // Lounge edge
+  for (const x of [cx - 22, cx - 12, cx + 12, cx + 22]) {
+    box(1.0, 0.28, 2.2, linen, x, 0.28, cz - 16.5, root)
+    box(1.0, 0.55, 0.38, linen, x, 0.5, cz - 15.6, root)
+  }
+  // Skylight strips + columns (channel-glass energy idea simplified)
+  const glow = mat(0xfff2dc, { roughness: 1, emissive: 0xffe2b0, emissiveIntensity: 0.85 })
+  box(46, 0.1, 2.2, glow, cx, H - 0.15, cz, root)
+  box(46, 0.1, 1.2, glow, cx, H - 0.15, cz - 8, root)
+  box(46, 0.1, 1.2, glow, cx, H - 0.15, cz + 8, root)
+  for (const x of [cx - 28, cx + 28]) {
+    for (const z of [cz - 16, cz + 16]) {
+      cyl(0.32, 0.32, H - 0.5, bronze, x, (H - 0.5) / 2, z, root)
+    }
   }
 }
 
-/** Outdoor infinity pool on the north terrace. */
-function addOutdoorPool(root, stone, wood, bronze, water, linen, green) {
-  box(32, 1.15, 9, stone, 0, -0.15, -48, root)
-  const waterMesh = new THREE.Mesh(new THREE.BoxGeometry(29.5, 0.45, 7.2), water)
-  waterMesh.position.set(0, 0.32, -48)
+/** Indoor training pool — 25×15m (Tuen Mun indoor training). */
+function addIndoorTrainingPool(root, tile, marble, water, H) {
+  const cx = 52
+  const cz = -48
+  box(32, 0.08, 22, tile, cx, 0.04, cz, root)
+  box(27, 1.15, 17, tile, cx, 0.2, cz, root)
+  const waterMesh = new THREE.Mesh(new THREE.BoxGeometry(25, 0.55, 15), water)
+  waterMesh.position.set(cx, 0.5, cz)
   root.add(waterMesh)
-  // Infinity edge lip
-  box(30, 0.15, 0.35, stone, 0, 0.55, -52, root)
+  for (let i = -2; i <= 2; i++) {
+    box(25, 0.02, 0.1, marble, cx, 0.78, cz + i * 2.8, root)
+  }
+  const glow = mat(0xfff0d8, { roughness: 1, emissive: 0xffe0a8, emissiveIntensity: 0.65 })
+  box(20, 0.08, 1.0, glow, cx, H - 0.2, cz, root)
+}
 
-  for (const x of [-18, -10, 10, 18]) {
-    box(1.0, 0.28, 2.4, linen, x, 0.28, -38, root)
-    box(1.0, 0.6, 0.4, linen, x, 0.55, -37, root)
+/**
+ * Outdoor complex inspired by Tuen Mun: leisure pool, 25×12.5 teaching/training, diving spa basin.
+ */
+function addOutdoorPoolComplex(root, stone, tile, wood, bronze, waterLeisure, waterTrain, linen, green) {
+  // Leisure / infinity main outdoor (~40×18 freeform-ish rectangle)
+  box(44, 1.2, 20, stone, -8, -0.15, -72, root)
+  const leisure = new THREE.Mesh(new THREE.BoxGeometry(40, 0.5, 16.5), waterLeisure)
+  leisure.position.set(-8, 0.35, -72)
+  root.add(leisure)
+  box(41, 0.16, 0.4, stone, -8, 0.58, -80.5, root) // infinity lip
+
+  // Outdoor teaching / training 25×12.5
+  box(29, 1.1, 16, tile, 32, -0.1, -70, root)
+  const train = new THREE.Mesh(new THREE.BoxGeometry(25, 0.45, 12.5), waterTrain)
+  train.position.set(32, 0.35, -70)
+  root.add(train)
+  for (let i = -2; i <= 2; i++) {
+    box(25, 0.02, 0.1, mat(COLORS.marble, { roughness: 0.3 }), 32, 0.58, -70 + i * 2.4, root)
   }
 
-  cyl(1.5, 1.5, 0.42, stone, 26, 0.3, -40, root, 28)
-  cyl(0.65, 0.65, 0.28, bronze, 26, 0.58, -40, root, 18)
+  // Diving / deep spa square ~11×11
+  box(13, 1.4, 13, stone, -42, -0.2, -70, root)
+  const dive = new THREE.Mesh(new THREE.BoxGeometry(11, 0.7, 11), waterTrain)
+  dive.position.set(-42, 0.4, -70)
+  root.add(dive)
+  // Board suggestion
+  box(1.2, 0.12, 4.5, wood, -42, 1.6, -64.5, root)
+  box(0.2, 1.5, 0.2, bronze, -42, 0.85, -63.5, root)
+
+  // Deck loungers
+  for (const x of [-24, -14, 4, 14]) {
+    box(1.05, 0.28, 2.4, linen, x, 0.28, -58, root)
+    box(1.05, 0.6, 0.4, linen, x, 0.55, -57, root)
+  }
+
+  // Fire lounge
+  cyl(1.6, 1.6, 0.42, stone, 48, 0.3, -58, root, 28)
+  cyl(0.7, 0.7, 0.28, bronze, 48, 0.58, -58, root, 18)
   for (let a = 0; a < Math.PI * 2; a += 1.0) {
-    box(1.05, 0.42, 0.8, linen, 26 + Math.cos(a) * 3.0, 0.32, -40 + Math.sin(a) * 3.0, root)
+    box(1.05, 0.42, 0.8, linen, 48 + Math.cos(a) * 3.2, 0.32, -58 + Math.sin(a) * 3.2, root)
   }
 
-  box(4, 0.1, 1.4, wood, -26, 0.78, -40, root)
+  // Outdoor dining
+  box(4.2, 0.1, 1.5, wood, -28, 0.78, -58, root)
   for (let i = -1; i <= 1; i++) {
-    box(0.5, 0.5, 0.5, linen, -26 + i * 1.1, 0.35, -39, root)
-    box(0.5, 0.5, 0.5, linen, -26 + i * 1.1, 0.35, -41, root)
+    box(0.5, 0.5, 0.5, linen, -28 + i * 1.15, 0.35, -57, root)
+    box(0.5, 0.5, 0.5, linen, -28 + i * 1.15, 0.35, -59, root)
   }
 
-  for (const x of [-38, -32, 32, 38]) {
-    box(1.6, 0.8, 1.6, stone, x, 0.45, -56, root)
-    cyl(0.45, 0.55, 1.8, green, x, 1.5, -56, root, 8)
+  // Planters / greening edge (Tuen Mun NW eco idea)
+  for (const x of [-55, -48, 48, 55]) {
+    box(1.8, 0.85, 1.8, stone, x, 0.45, -86, root)
+    cyl(0.5, 0.6, 2.0, green, x, 1.6, -86, root, 8)
   }
 }
 
 function addSkyLounge(root, velvet, linen, wood, bronze, L2) {
   const y = L2
-  box(6, 0.5, 2.6, velvet, -2.5, y + 0.35, 12, root)
-  box(2.6, 0.5, 5, velvet, 2.5, y + 0.35, 10, root)
-  box(2.8, 0.1, 1.3, wood, 0, y + 0.42, 8, root)
-  box(8, 0.04, 6, linen, 0, y + 0.02, 10, root)
-  box(0.1, 0.35, 0.1, bronze, -0.9, y + 0.2, 7.6, root)
-  box(0.1, 0.35, 0.1, bronze, 0.9, y + 0.2, 7.6, root)
+  box(7, 0.52, 3, velvet, -3, y + 0.36, 18, root)
+  box(3, 0.52, 6, velvet, 3.5, y + 0.36, 15, root)
+  box(3.2, 0.1, 1.4, wood, 0, y + 0.44, 12, root)
+  box(10, 0.04, 8, linen, 0, y + 0.02, 15, root)
 }
 
 function addMasterSuite(root, linen, wood, velvet, bronze, marble, L2) {
   const y = L2
-  box(2.8, 0.5, 3.0, wood, -26, y + 0.4, -10, root)
-  box(2.7, 0.38, 2.8, linen, -26, y + 0.78, -10, root)
-  box(2.8, 1.05, 0.3, velvet, -26, y + 1.05, -8.4, root)
-  box(0.7, 0.55, 0.55, wood, -28.2, y + 0.38, -8.5, root)
-  box(0.7, 0.55, 0.55, wood, -23.8, y + 0.38, -8.5, root)
-  cyl(0.14, 0.14, 0.35, bronze, -28.2, y + 0.8, -8.5, root)
-  box(2.2, 0.42, 0.6, velvet, -26, y + 0.32, -12.5, root)
-  cyl(1.2, 1.1, 0.55, marble, -36, y + 0.38, -18, root, 32)
-  box(3.5, 0.9, 0.65, marble, -38, y + 0.5, -22, root)
+  box(3.0, 0.52, 3.2, wood, -36, y + 0.42, -12, root)
+  box(2.9, 0.4, 3.0, linen, -36, y + 0.82, -12, root)
+  box(3.0, 1.1, 0.32, velvet, -36, y + 1.1, -10.2, root)
+  box(0.75, 0.55, 0.55, wood, -38.4, y + 0.4, -10.3, root)
+  box(0.75, 0.55, 0.55, wood, -33.6, y + 0.4, -10.3, root)
+  cyl(1.25, 1.15, 0.55, marble, -48, y + 0.4, -22, root, 32)
+  box(4, 0.9, 0.7, marble, -50, y + 0.52, -26, root)
 }
 
 function addDressing(root, wood, woodDark, marble, L2) {
   const y = L2
-  box(10, 2.7, 0.22, wood, -36, y + 1.45, 2, root)
-  box(0.22, 2.7, 7, wood, -42, y + 1.45, 6, root)
+  box(12, 2.8, 0.24, wood, -50, y + 1.5, 4, root)
+  box(0.24, 2.8, 8, wood, -58, y + 1.5, 8, root)
   for (let i = 0; i < 5; i++) {
-    box(9.5, 0.05, 0.15, woodDark, -36, y + 0.55 + i * 0.5, 2.05, root)
+    box(11.5, 0.05, 0.15, woodDark, -50, y + 0.55 + i * 0.5, 4.05, root)
   }
-  box(2.4, 0.08, 0.9, marble, -34, y + 0.9, 8, root)
+  box(2.6, 0.08, 1.0, marble, -46, y + 0.95, 10, root)
 }
 
 function addGym(root, stone, wood, linen, L2) {
   const y = L2
-  box(10, 0.05, 8, stone, 32, y + 0.03, -10, root)
-  box(3.2, 0.35, 1.0, wood, 28, y + 0.3, -7, root)
-  box(1.3, 0.2, 2.4, linen, 35, y + 0.25, -11, root)
-  box(0.45, 2.1, 2.0, wood, 38, y + 1.15, -13, root)
-  box(8, 2.5, 0.08, mat(0xc5d0dc, { roughness: 0.15, metalness: 0.4 }), 32, y + 1.45, -15.5, root)
+  box(12, 0.05, 10, stone, 46, y + 0.03, -10, root)
+  box(3.5, 0.35, 1.1, wood, 42, y + 0.3, -6, root)
+  box(1.4, 0.2, 2.6, linen, 50, y + 0.25, -12, root)
+  box(9, 2.6, 0.08, mat(0xc5d0dc, { roughness: 0.15, metalness: 0.4 }), 46, y + 1.5, -18, root)
 }
 
 function addMorningDeck(root, stone, wood, linen, green, bronze, L2) {
   const y = L2
-  for (const x of [-12, -5, 5, 12]) {
-    box(1.0, 0.28, 2.3, linen, x, y + 0.28, -38, root)
-    box(1.0, 0.55, 0.38, linen, x, y + 0.5, -37, root)
+  for (const x of [-16, -6, 6, 16]) {
+    box(1.05, 0.28, 2.4, linen, x, y + 0.28, -54, root)
+    box(1.05, 0.55, 0.4, linen, x, y + 0.5, -53, root)
   }
-  box(3.0, 0.1, 1.2, wood, 0, y + 0.78, -42, root)
-  for (const x of [-0.9, 0.9]) {
-    box(0.45, 0.5, 0.45, linen, x, y + 0.35, -41.2, root)
-    box(0.45, 0.5, 0.45, linen, x, y + 0.35, -42.8, root)
-  }
-  cyl(0.75, 0.75, 0.35, stone, 18, y + 0.25, -40, root)
-  cyl(0.35, 0.35, 0.2, bronze, 18, y + 0.5, -40, root)
-  for (const x of [-20, 20]) {
-    box(1.4, 0.7, 1.4, stone, x, y + 0.4, -48, root)
-    cyl(0.4, 0.5, 1.6, green, x, y + 1.4, -48, root, 8)
+  box(3.4, 0.1, 1.3, wood, 0, y + 0.78, -60, root)
+  cyl(0.8, 0.8, 0.35, stone, 24, y + 0.25, -56, root)
+  cyl(0.38, 0.38, 0.2, bronze, 24, y + 0.5, -56, root)
+  for (const x of [-28, 28]) {
+    box(1.5, 0.75, 1.5, stone, x, y + 0.42, -66, root)
+    cyl(0.42, 0.52, 1.7, green, x, y + 1.45, -66, root, 8)
   }
 }
 
 function addInteriorLights(scene, L2) {
   const spots = [
-    [0, 4.0, 26, 0xfff2dc, 32],
-    [0, 8.0, 0, 0xfff6e8, 48],
-    [0, 4.0, 0, 0xfff0d8, 40],
-    [24, 3.8, 4, 0xffefd4, 26],
-    [34, 3.8, -8, 0xfff8ec, 28],
-    [34, 3.8, 18, 0xe8f0ff, 20],
-    [-34, 3.8, 18, 0xffefd4, 20],
-    [-30, 3.6, -18, 0xfff0dc, 24],
-    [-40, 3.4, -26, 0xeef4ff, 18],
-    [34, 3.6, -26, 0xe8f6ff, 28],
-    [0, 3.4, -44, 0xfff4e0, 32],
-    [-26, L2 + 3.3, -10, 0xfff0d8, 22],
-    [32, L2 + 3.3, -10, 0xf0f4ff, 20],
-    [0, L2 + 3.3, 10, 0xfff4e4, 26],
-    [0, L2 + 3.1, -38, 0xfff6e8, 24],
+    [0, 4.2, 40, 0xfff2dc, 36],
+    [0, 8.5, 4, 0xfff6e8, 55],
+    [28, 4.5, -32, 0xe8f4ff, 55],
+    [52, 4.0, -48, 0xeef6ff, 30],
+    [0, 3.6, -68, 0xfff4e0, 40],
+    [32, 3.6, 10, 0xffefd4, 28],
+    [48, 3.8, -6, 0xfff8ec, 28],
+    [48, 3.8, 28, 0xe8f0ff, 22],
+    [-48, 3.8, 28, 0xffefd4, 22],
+    [-42, 3.6, -22, 0xfff0dc, 26],
+    [-54, 3.4, -34, 0xeef4ff, 18],
+    [-36, L2 + 3.4, -12, 0xfff0d8, 24],
+    [46, L2 + 3.4, -10, 0xf0f4ff, 22],
+    [0, L2 + 3.4, 16, 0xfff4e4, 28],
+    [0, L2 + 3.2, -52, 0xfff6e8, 26],
   ]
   for (const [x, y, z, color, dist] of spots) {
-    const light = new THREE.PointLight(color, 16, dist, 2)
+    const light = new THREE.PointLight(color, 18, dist, 2)
     light.position.set(x, y, z)
     scene.add(light)
   }
@@ -480,10 +542,10 @@ function addCoveLights(root, H, L2, W, D) {
     emissiveIntensity: 0.85,
     roughness: 1,
   })
-  box(W - 4, 0.05, 0.1, glow, 0, H - 0.12, D / 2 - 1, root)
-  box(W - 4, 0.05, 0.1, glow, 0, H - 0.12, -D / 2 + 1, root)
-  box(0.1, 0.05, D - 4, glow, W / 2 - 1, H - 0.12, 0, root)
-  box(0.1, 0.05, D - 4, glow, -W / 2 + 1, H - 0.12, 0, root)
-  box(W - 16, 0.05, 0.1, glow, 0, L2 + H - 0.15, 20, root)
-  box(W - 16, 0.05, 0.1, glow, 0, L2 + H - 0.15, -26, root)
+  box(W - 6, 0.05, 0.12, glow, 0, H - 0.14, D / 2 - 1.5, root)
+  box(W - 6, 0.05, 0.12, glow, 0, H - 0.14, -D / 2 + 1.5, root)
+  box(0.12, 0.05, D - 6, glow, W / 2 - 1.5, H - 0.14, 0, root)
+  box(0.12, 0.05, D - 6, glow, -W / 2 + 1.5, H - 0.14, 0, root)
+  box(W - 20, 0.05, 0.12, glow, 0, L2 + H - 0.16, 28, root)
+  box(W - 20, 0.05, 0.12, glow, 0, L2 + H - 0.16, -40, root)
 }

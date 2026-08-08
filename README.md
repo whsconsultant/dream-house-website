@@ -1,6 +1,6 @@
 # Dream House — Full-Floor Penthouse
 
-Interactive WebGL walkthrough of a **~40,000 sq ft crown duplex** in morning light — the tallest tower in the skyline — with an indoor lap pool, outdoor infinity pool, double-height great room, and a full private upper level.
+Interactive WebGL walkthrough of a **~90,000 sq ft crown duplex** with a Tuen Mun–inspired aquatic wing: indoor heated **50×25m** main pool + **25×15m** training pool, plus outdoor leisure, **25×12.5m** teaching/training, and diving spa basins — crowning the tallest tower.
 
 ## Run locally
 

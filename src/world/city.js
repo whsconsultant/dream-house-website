@@ -2,8 +2,8 @@ import * as THREE from 'three'
 
 /** City sits far below so the penthouse crowns the tallest tower. */
 export const CITY = {
-  groundY: -160,
-  towerHeight: 160, // shaft from street to penthouse slab
+  groundY: -180,
+  towerHeight: 180,
 }
 
 /** Morning skyline — every neighbor peaks below the penthouse floor (y = 0). */
@@ -34,14 +34,14 @@ export function createCity(scene) {
 
   // Our tower shaft — top meets penthouse slab at y ≈ 0
   const plinth = new THREE.Mesh(
-    new THREE.BoxGeometry(100, towerHeight, 72),
+    new THREE.BoxGeometry(134, towerHeight, 110),
     new THREE.MeshStandardMaterial({ color: 0xd8d2c8, roughness: 0.85, metalness: 0.08 }),
   )
   plinth.position.set(0, groundY + towerHeight / 2, 0)
   city.add(plinth)
 
   const shaftGlass = new THREE.Mesh(
-    new THREE.BoxGeometry(98, towerHeight - 2, 70),
+    new THREE.BoxGeometry(132, towerHeight - 2, 108),
     new THREE.MeshStandardMaterial({
       color: 0x9eb8cc,
       roughness: 0.25,
@@ -53,12 +53,11 @@ export function createCity(scene) {
   shaftGlass.position.set(0, groundY + towerHeight / 2, 0)
   city.add(shaftGlass)
 
-  // Crown ring just under the slab
   const crown = new THREE.Mesh(
-    new THREE.BoxGeometry(102, 2.2, 74),
+    new THREE.BoxGeometry(136, 2.4, 112),
     new THREE.MeshStandardMaterial({ color: 0xb8925a, roughness: 0.4, metalness: 0.55 }),
   )
-  crown.position.set(0, -1.0, 0)
+  crown.position.set(0, -1.1, 0)
   city.add(crown)
 
   const facadeMat = new THREE.MeshStandardMaterial({ color: 0xc4cdd6, roughness: 0.7, metalness: 0.15 })
@@ -76,7 +75,7 @@ export function createCity(scene) {
     const dist = 85 + rng() * 220
     const x = Math.cos(angle) * dist
     const z = Math.sin(angle) * dist
-    if (Math.hypot(x, z) < 75) continue
+    if (Math.hypot(x, z) < 95) continue
 
     const w = 6 + rng() * 14
     const d = 6 + rng() * 14
