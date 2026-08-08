@@ -32,6 +32,20 @@ body {
   height: 100%;
 }
 
+.plan-meta {
+  position: absolute;
+  left: 1.25rem;
+  top: 1.25rem;
+  z-index: 5;
+  max-width: min(28rem, calc(100% - 2.5rem));
+  color: var(--ink);
+  font-family: var(--font-display);
+  font-size: clamp(0.95rem, 2vw, 1.15rem);
+  line-height: 1.35;
+  text-shadow: 0 1px 0 rgba(255, 255, 255, 0.35);
+  pointer-events: none;
+}
+
 .layer-badge {
   position: absolute;
   left: 1.25rem;

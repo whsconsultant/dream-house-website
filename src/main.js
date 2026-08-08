@@ -1,10 +1,12 @@
 /**
- * Layer 1 — Shell only
- * Empty scene + camera + lights + render loop.
- * No house geometry yet.
+ * Layer 2 — Plan data
+ * Shell + flat plan overlay (no solid house mesh).
  */
 import './style.css'
 import * as THREE from 'three'
+import { OrbitControls } from 'three/examples/jsm/controls/OrbitControls.js'
+import { createPlanDebug } from './world/plan-debug.js'
+import { PLAN_META, validateWallJoins } from './world/plan.js'
 
 const canvas = document.querySelector('#scene')
 
@@ -23,33 +25,46 @@ const scene = new THREE.Scene()
 scene.background = new THREE.Color(0xb8cce0)
 
 const camera = new THREE.PerspectiveCamera(
-  60,
+  50,
   window.innerWidth / window.innerHeight,
   0.1,
   200,
 )
-camera.position.set(12, 8, 16)
-camera.lookAt(0, 0, 0)
+camera.position.set(0, 42, 28)
+camera.lookAt(0, 0, -2)
 
-// Minimal daylight so later layers are visible as they appear
-const hemi = new THREE.HemisphereLight(0xd7e8f8, 0xc4b49a, 0.9)
+const hemi = new THREE.HemisphereLight(0xd7e8f8, 0xc4b49a, 0.95)
 scene.add(hemi)
 
-const sun = new THREE.DirectionalLight(0xffe2b0, 1.1)
-sun.position.set(20, 30, 10)
+const sun = new THREE.DirectionalLight(0xffe2b0, 1.0)
+sun.position.set(20, 40, 10)
 scene.add(sun)
 
-// Origin marker — removed in later layers; proves the shell runs
-const marker = new THREE.Mesh(
-  new THREE.BoxGeometry(0.4, 0.4, 0.4),
-  new THREE.MeshStandardMaterial({ color: 0xb8925a }),
-)
-marker.position.y = 0.2
-scene.add(marker)
+const { root, report } = createPlanDebug()
+scene.add(root)
+
+const badge = document.querySelector('.layer-badge')
+if (badge) {
+  badge.textContent = report.ok
+    ? `Layer 2 · Plan · ${report.wallCount} walls · joins OK`
+    : `Layer 2 · Plan · ${report.orphanCount} free ends`
+}
+
+const meta = document.querySelector('.plan-meta')
+if (meta) {
+  meta.textContent = `${PLAN_META.title} — ${PLAN_META.subtitle}`
+}
+
+const controls = new OrbitControls(camera, canvas)
+controls.target.set(0, 0, -1)
+controls.enableDamping = true
+controls.maxPolarAngle = Math.PI * 0.48
+controls.minDistance = 12
+controls.maxDistance = 80
 
 function animate() {
   requestAnimationFrame(animate)
-  marker.rotation.y += 0.01
+  controls.update()
   renderer.render(scene, camera)
 }
 
@@ -60,3 +75,6 @@ window.addEventListener('resize', () => {
   camera.updateProjectionMatrix()
   renderer.setSize(window.innerWidth, window.innerHeight)
 })
+
+// Expose for console inspection
+window.__plan = { PLAN_META, validateWallJoins, report }
