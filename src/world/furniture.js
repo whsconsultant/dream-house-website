@@ -1,3 +1,4 @@
+import * as THREE from 'three'
 import { box, cyl } from './materials.js'
 
 /** Detailed furniture pieces — multi-part, residential proportions. */
