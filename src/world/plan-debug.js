@@ -257,23 +257,23 @@ export function createPlanDebug() {
 
   const l1 = buildSheet(
     1,
-    'Level 1 — Main living',
-    'Full floor · great room · kitchen · dining · family',
+    'Level 1 — Live',
+    'Foyer · great room · kitchen · office · terrace',
     'l1',
     0xd8d2c6,
     report,
   )
   const l2 = buildSheet(
     2,
-    'Level 2 — Private suites',
-    'Full floor · primary + 5 bedrooms · his & her baths',
+    'Level 2 — Sleep',
+    'Primary suite · 2 guests · media',
     'l2',
     0xd2d8cc,
     report,
   )
   const l3 = buildSheet(
     3,
-    'Roof — Terrace',
+    'Roof — Outdoors',
     'Pool · spa · summer kitchen · sundeck',
     'l3',
     0xcbd5c8,
@@ -294,9 +294,9 @@ export function createPlanDebug() {
     report,
     sheets: { l1, l2, l3 },
     titles: {
-      l1: 'Level 1 — Main living',
-      l2: 'Level 2 — Private suites',
-      l3: 'Roof — Terrace',
+      l1: 'Level 1 — Live (open great room)',
+      l2: 'Level 2 — Sleep (3 bedrooms)',
+      l3: 'Roof — Pool terrace',
     },
     frame: {
       target: { x: 0, y: 0, z: (env.z0 + env.z1) / 2 },
