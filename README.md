@@ -4,7 +4,7 @@ Duplex penthouse built **layer by layer**.
 
 ## Current layer
 
-**Layer 2 — Plan data:** rooms, envelope, wall centerlines (join-aware), pool footprints. Flat debug overlay only — no solid house mesh yet.
+**Layer 2 — Plan data:** two separate floor plans (Level 1 main · Level 2 roof), side by side — not overlaid. Room labels with sizes. Wall joins validated.
 
 - Dark lines = exterior · blue = glass · bronze = interior · green dots = shared joints · amber = free ends
 - Orbit to inspect (drag / scroll)
