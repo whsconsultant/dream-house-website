@@ -4,16 +4,66 @@ import { PointerLockControls } from 'three/examples/jsm/controls/PointerLockCont
 import { OrbitControls } from 'three/examples/jsm/controls/OrbitControls.js'
 import { createPenthouse, ROOMS, LEVEL } from './world/penthouse.js'
 import { createCity, createSky } from './world/city.js'
+import { mountFloorPlan } from './floorplan-ui.js'
 
 const canvas = document.querySelector('#scene')
 const landing = document.querySelector('#landing')
 const enterBtn = document.querySelector('#enter-btn')
 const orbitBtn = document.querySelector('#orbit-btn')
+const planBtn = document.querySelector('#plan-btn')
+const planPanel = document.querySelector('#plan-panel')
+const planRoot = document.querySelector('#plan-root')
+const planClose = document.querySelector('#plan-close')
+const hudPlanBtn = document.querySelector('#hud-plan-btn')
 const hud = document.querySelector('#hud')
 const roomLabel = document.querySelector('#room-label')
 const roomNav = document.querySelector('#room-nav')
 const crosshair = document.querySelector('#crosshair')
 const modeBtn = document.querySelector('#mode-btn')
+
+let floorPlanApi = null
+
+function openFloorPlan() {
+  planPanel.classList.remove('is-hidden')
+  planPanel.setAttribute('aria-hidden', 'false')
+  if (!floorPlanApi) {
+    floorPlanApi = mountFloorPlan(planRoot, {
+      activeId: ROOMS[currentRoom]?.id,
+      onSelectRoom: (id) => {
+        const idx = ROOMS.findIndex((r) => r.id === id)
+        if (idx >= 0) {
+          closeFloorPlan()
+          enterExperience(mode === 'walk' ? 'walk' : 'orbit')
+          goToRoom(idx)
+        }
+      },
+    })
+  } else {
+    floorPlanApi.setActive(ROOMS[currentRoom]?.id)
+    floorPlanApi.setLevel(ROOMS[currentRoom]?.level === 2 ? 2 : 1)
+  }
+}
+
+function closeFloorPlan() {
+  planPanel.classList.add('is-hidden')
+  planPanel.setAttribute('aria-hidden', 'true')
+}
+
+planBtn?.addEventListener('click', openFloorPlan)
+hudPlanBtn?.addEventListener('click', openFloorPlan)
+planClose?.addEventListener('click', closeFloorPlan)
+planPanel?.addEventListener('click', (e) => {
+  if (e.target === planPanel) closeFloorPlan()
+})
+document.addEventListener('keydown', (e) => {
+  if (e.code === 'KeyP' && !e.repeat) {
+    if (planPanel.classList.contains('is-hidden')) openFloorPlan()
+    else closeFloorPlan()
+  }
+  if (e.code === 'Escape' && !planPanel.classList.contains('is-hidden')) {
+    closeFloorPlan()
+  }
+})
 
 const renderer = new THREE.WebGLRenderer({
   canvas,

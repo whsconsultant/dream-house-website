@@ -1,10 +1,11 @@
 import * as THREE from 'three'
+import { ROOMS, LEVEL } from './rooms.js'
+
+export { ROOMS, LEVEL }
 
 /**
- * Duplex crown penthouse — layout referenced to open-terrace duplexes
- * (ORLA Infinity / Glyfada-style): living opens to an uncovered infinity terrace;
- * L2 is set back so outdoor water is never under a slab.
- * Indoor heated 50×25 + training; outdoor infinity on open deck.
+ * Duplex crown penthouse — layout follows floorplan-data.js.
+ * Living opens to an uncovered infinity terrace; L2 is set back.
  */
 
 const COLORS = {
@@ -52,30 +53,6 @@ function box(w, h, d, material, x, y, z, parent, cast = true) {
 function cyl(rTop, rBot, h, material, x, y, z, parent, seg = 24) {
   return mesh(new THREE.CylinderGeometry(rTop, rBot, h, seg), material, x, y, z, parent)
 }
-
-export const LEVEL = {
-  H: 4.8,
-  L2: 5.0,
-}
-
-/** Enclosed plate ends at z = -28; open terrace is z < -28 under open sky. */
-export const ROOMS = [
-  { id: 'foyer', name: 'Grand Foyer', position: new THREE.Vector3(0, 1.65, 28), lookAt: new THREE.Vector3(0, 2.5, 5) },
-  { id: 'living', name: 'Great Room', position: new THREE.Vector3(0, 1.65, 2), lookAt: new THREE.Vector3(0, 1.8, -20) },
-  { id: 'dining', name: 'Dining', position: new THREE.Vector3(22, 1.65, 8), lookAt: new THREE.Vector3(28, 1.5, 8) },
-  { id: 'kitchen', name: 'Kitchen', position: new THREE.Vector3(34, 1.65, -4), lookAt: new THREE.Vector3(38, 1.5, -8) },
-  { id: 'indoorpool', name: 'Indoor Pool', position: new THREE.Vector3(-22, 1.65, -8), lookAt: new THREE.Vector3(-28, 1.8, -8) },
-  { id: 'indoortrain', name: 'Training Pool', position: new THREE.Vector3(-38, 1.65, 10), lookAt: new THREE.Vector3(-38, 1.5, 6) },
-  { id: 'terrace', name: 'Pool Terrace', position: new THREE.Vector3(0, 1.65, -36), lookAt: new THREE.Vector3(0, 1.4, -48) },
-  { id: 'media', name: 'Cinema', position: new THREE.Vector3(34, 1.65, 20), lookAt: new THREE.Vector3(36, 1.5, 22) },
-  { id: 'library', name: 'Library', position: new THREE.Vector3(34, 1.65, -16), lookAt: new THREE.Vector3(36, 1.5, -18) },
-  { id: 'guest', name: 'Guest Suite', position: new THREE.Vector3(-38, 1.65, 22), lookAt: new THREE.Vector3(-40, 1.5, 22) },
-  { id: 'stairs', name: 'Grand Stair', position: new THREE.Vector3(10, 1.65, 16), lookAt: new THREE.Vector3(10, 4.5, 10) },
-  { id: 'master', name: 'Master Suite', position: new THREE.Vector3(-24, LEVEL.L2 + 1.65, 8), lookAt: new THREE.Vector3(-30, LEVEL.L2 + 1.5, 4) },
-  { id: 'gym', name: 'Sky Gym', position: new THREE.Vector3(28, LEVEL.L2 + 1.65, 6), lookAt: new THREE.Vector3(32, LEVEL.L2 + 1.5, 4) },
-  { id: 'skylounge', name: 'Sky Lounge', position: new THREE.Vector3(0, LEVEL.L2 + 1.65, 12), lookAt: new THREE.Vector3(0, LEVEL.L2 + 1.5, 0) },
-  { id: 'balcony', name: 'Terrace Overlook', position: new THREE.Vector3(0, LEVEL.L2 + 1.65, -22), lookAt: new THREE.Vector3(0, 1.5, -42) },
-]
 
 export function createPenthouse(scene) {
   const root = new THREE.Group()

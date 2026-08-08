@@ -6,9 +6,9 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <meta
       name="description"
-      content="Crown duplex with Tuen Mun–scale pools: indoor 50×25m main + training pool, outdoor leisure, teaching, and diving basins above the skyline."
+      content="Dream House crown duplex — architectural floor plan and 3D walkthrough with indoor pool and open-sky terrace infinity pool."
     />
-    <title>Dream House — Crown Duplex with Dual Pool Complex</title>
+    <title>Dream House — Floor Plan & Penthouse</title>
     <link rel="preconnect" href="https://fonts.googleapis.com" />
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
     <link
@@ -23,29 +23,38 @@
       <div id="landing" class="landing">
         <div class="landing__veil"></div>
         <div class="landing__content">
-          <p class="landing__meta">Residence · Crown Duplex · Open Terrace</p>
+          <p class="landing__meta">Residence · Crown Duplex · Plan First</p>
           <h1 class="landing__brand">Dream House</h1>
           <p class="landing__tagline">
-            A duplex penthouse with living opening onto an uncovered infinity
-            terrace — indoor 50×25m pool hall, set-back upper floor, morning light
-            above the skyline.
+            Start with the floor plan — Level 1 living and pools, Level 2 set
+            back so the outdoor terrace stays open to the sky — then walk the 3D.
           </p>
           <div class="landing__actions">
-            <button type="button" id="enter-btn" class="btn btn--primary">
-              Enter the penthouse
+            <button type="button" id="plan-btn" class="btn btn--primary">
+              View floor plan
+            </button>
+            <button type="button" id="enter-btn" class="btn btn--ghost">
+              Enter 3D
             </button>
             <button type="button" id="orbit-btn" class="btn btn--ghost">
               Orbit view
             </button>
           </div>
         </div>
-        <div class="landing__hint">Scroll or click to begin</div>
+      </div>
+
+      <div id="plan-panel" class="plan-panel is-hidden" aria-hidden="true">
+        <button type="button" id="plan-close" class="plan-panel__close" aria-label="Close floor plan">
+          Close
+        </button>
+        <div id="plan-root" class="plan-panel__body"></div>
       </div>
 
       <div id="hud" class="hud is-hidden" aria-hidden="true">
         <header class="hud__top">
           <div class="hud__brand">Dream House</div>
           <div id="room-label" class="hud__room">Foyer</div>
+          <button type="button" id="hud-plan-btn" class="btn btn--tiny">Plan</button>
         </header>
 
         <nav class="hud__rooms" id="room-nav" aria-label="Rooms"></nav>
@@ -54,7 +63,7 @@
           <span><kbd>W</kbd><kbd>A</kbd><kbd>S</kbd><kbd>D</kbd> move</span>
           <span><kbd>Mouse</kbd> look</span>
           <span><kbd>E</kbd> next room</span>
-          <span><kbd>Esc</kbd> release</span>
+          <span><kbd>P</kbd> plan</span>
           <button type="button" id="mode-btn" class="btn btn--tiny">Orbit</button>
         </footer>
       </div>
