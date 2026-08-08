@@ -218,7 +218,7 @@ function buildSheet(level, title, sub, tone, mats, report) {
 
   const walls = ALL_WALLS.filter((w) => w.level === level)
   addKitWalls(sheet, walls, mats)
-  addJoinDots(sheet, walls, report)
+  // Join dots hidden — they made the plan read like a maze
 
   sheet.add(makeTitle(title, sub, (env.x0 + env.x1) / 2, env.z1 + 4))
   return sheet
@@ -234,7 +234,7 @@ export function createPlanDebug() {
   const l1 = buildSheet(
     1,
     'Level 1 — Live',
-    'Foyer · great room · kitchen · office · terrace',
+    'Open great room + kitchen · service core by entry',
     'l1',
     mats,
     report,
@@ -242,7 +242,7 @@ export function createPlanDebug() {
   const l2 = buildSheet(
     2,
     'Level 2 — Sleep',
-    'Primary suite · 2 guests · media',
+    'Primary west · two guests east · short landing',
     'l2',
     mats,
     report,
@@ -250,7 +250,7 @@ export function createPlanDebug() {
   const l3 = buildSheet(
     3,
     'Roof — Outdoors',
-    'Pool · spa · summer kitchen · sundeck',
+    'Open deck · pool · spa · summer kitchen',
     'l3',
     mats,
     report,
@@ -270,8 +270,8 @@ export function createPlanDebug() {
     mats,
     sheets: { l1, l2, l3 },
     titles: {
-      l1: 'Level 1 — Live (open great room)',
-      l2: 'Level 2 — Sleep (3 bedrooms)',
+      l1: 'Level 1 — Open living (no corridor maze)',
+      l2: 'Level 2 — Primary + 2 guests',
       l3: 'Roof — Pool terrace',
     },
     frame: {

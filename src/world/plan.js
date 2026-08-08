@@ -1,14 +1,10 @@
 /**
- * Layer 2 — Plan data (redesigned for usefulness)
+ * Plan data — open-plan duplex (not a corridor maze).
  *
- * Research takeaway (NYC/Monaco/Glyfada duplex PHs):
- * - 3 bedrooms beat 6 undersized ones
- * - Day/night split: social on L1, private on L2
- * - One open great room (live + dine) — don't chop into family/wet-bar/breakfast boxes
- * - Support: pantry, powder, laundry only
- * - Roof: pool + lounge + summer kitchen
- *
- * Full-floor plate 40 × 24 m (~960 m²). One house, no A/B neighbor.
+ * L1: foyer opens into one great room + kitchen (no gallery spine).
+ *     Powder / stair / laundry = one service core by the entry.
+ * L2: primary west · two guests east · short landing at stair (no long hall).
+ * Roof: open deck + pool.
  */
 
 export const LEVEL = {
@@ -23,7 +19,7 @@ export const LEVEL = {
 
 export const PLAN_META = {
   title: 'Dream House — Full-Floor Duplex',
-  subtitle: '3-bed · open great room · roof pool · designed to live in',
+  subtitle: 'Open great room · 3 beds · roof pool',
   units: 'm',
   xMin: -22,
   xMax: 22,
@@ -35,7 +31,7 @@ export const PLAN_META = {
   scaleBarMeters: 5,
   plateW: 40,
   plateD: 24,
-  reference: 'Open-plan duplex pattern: foyer→great room→kitchen; suites upstairs; roof pool',
+  reference: 'Open plan: foyer → great room/kitchen; suites upstairs; no corridor maze',
 }
 
 const T = LEVEL.wallT
@@ -57,31 +53,30 @@ function W(id, ax, az, bx, bz, opts = {}) {
   }
 }
 
-// ─── Rooms (lean program) ───────────────────────────────────────────────────
+// ─── Rooms ──────────────────────────────────────────────────────────────────
 
 export const L1_ROOMS = [
-  { id: 'foyer', name: 'Foyer', level: 1, x0: -3.5, x1: 3.5, z0: 8, z1: 12, note: 'Private elevator' },
-  { id: 'gallery', name: 'Gallery', level: 1, x0: -2, x1: 2, z0: 1, z1: 8, note: '', corridor: true },
+  { id: 'foyer', name: 'Foyer', level: 1, x0: -3, x1: 3, z0: 8, z1: 12, note: 'Elevator' },
   {
     id: 'great',
     name: 'Great Room',
     level: 1,
     x0: -18,
-    x1: 2,
+    x1: 8,
     z0: -10,
-    z1: 1,
-    note: 'Living + dining · open',
+    z1: 8,
+    note: 'Living + dining · fully open',
     void: true,
   },
-  { id: 'kitchen', name: 'Kitchen', level: 1, x0: 2, x1: 12, z0: -10, z1: -1, note: 'Island · open to great' },
-  { id: 'pantry', name: 'Pantry', level: 1, x0: 12, x1: 18, z0: -6, z1: -1, note: '' },
-  { id: 'office', name: 'Office', level: 1, x0: 12, x1: 18, z0: -1, z1: 6, note: 'Flex / guest' },
-  { id: 'powder', name: 'Powder', level: 1, x0: 3, x1: 6, z0: 4, z1: 7, note: '' },
-  { id: 'stairs', name: 'Stair', level: 1, x0: 6, x1: 11, z0: 4, z1: 10, note: 'To suites', stair: true },
-  { id: 'laundry', name: 'Laundry', level: 1, x0: 11, x1: 16, z0: 7, z1: 11, note: '' },
+  { id: 'kitchen', name: 'Kitchen', level: 1, x0: 8, x1: 18, z0: -10, z1: 0, note: 'Open to great room' },
+  { id: 'pantry', name: 'Pantry', level: 1, x0: 14, x1: 18, z0: 0, z1: 4, note: '' },
+  { id: 'office', name: 'Office', level: 1, x0: 8, x1: 14, z0: 0, z1: 6, note: '' },
+  { id: 'powder', name: 'Powder', level: 1, x0: 3, x1: 6, z0: 5, z1: 8, note: '' },
+  { id: 'stairs', name: 'Stair', level: 1, x0: 6, x1: 11, z0: 5, z1: 11, note: '', stair: true },
+  { id: 'laundry', name: 'Laundry', level: 1, x0: 11, x1: 16, z0: 8, z1: 11, note: '' },
   {
     id: 'terrace',
-    name: 'View Terrace',
+    name: 'Terrace',
     level: 1,
     x0: -18,
     x1: 18,
@@ -93,32 +88,30 @@ export const L1_ROOMS = [
 ]
 
 export const L2_ROOMS = [
-  { id: 'stairs2', name: 'Stair', level: 2, x0: 6, x1: 11, z0: 4, z1: 10, note: '', stair: true },
-  { id: 'hall', name: 'Hall', level: 2, x0: -2, x1: 2, z0: -2, z1: 8, note: '', corridor: true },
-  { id: 'elev2', name: 'Elevator', level: 2, x0: -2, x1: 2, z0: 8, z1: 12, note: '', corridor: true },
+  { id: 'stairs2', name: 'Stair', level: 2, x0: 6, x1: 11, z0: 5, z1: 11, note: '', stair: true },
+  { id: 'landing', name: 'Landing', level: 2, x0: 2, x1: 6, z0: 5, z1: 11, note: '', corridor: true },
   {
     id: 'primary',
-    name: 'Primary Bedroom',
+    name: 'Primary',
     level: 2,
     x0: -18,
-    x1: -4,
+    x1: 2,
     z0: -10,
-    z1: 2,
-    note: 'View suite',
+    z1: 5,
+    note: 'Bedroom',
   },
-  { id: 'dressing', name: 'Dressing', level: 2, x0: -18, x1: -10, z0: 2, z1: 9, note: 'WIC' },
-  { id: 'pbath', name: 'Primary Bath', level: 2, x0: -10, x1: -4, z0: 2, z1: 9, note: 'Spa bath' },
-  { id: 'guest1', name: 'Guest Suite', level: 2, x0: 4, x1: 12, z0: -10, z1: -1, note: 'En suite' },
-  { id: 'bath1', name: 'Bath', level: 2, x0: 12, x1: 16, z0: -10, z1: -5, note: '' },
-  { id: 'guest2', name: 'Guest Suite', level: 2, x0: 4, x1: 12, z0: -1, z1: 8, note: 'En suite' },
-  { id: 'bath2', name: 'Bath', level: 2, x0: 12, x1: 16, z0: -5, z1: 0, note: '' },
-  { id: 'media', name: 'Media / Lounge', level: 2, x0: 11, x1: 18, z0: 4, z1: 11, note: 'Family' },
+  { id: 'dressing', name: 'Dressing', level: 2, x0: -18, x1: -10, z0: 5, z1: 11, note: 'WIC' },
+  { id: 'pbath', name: 'Primary Bath', level: 2, x0: -10, x1: 2, z0: 5, z1: 11, note: '' },
+  { id: 'guest1', name: 'Guest 1', level: 2, x0: 11, x1: 18, z0: -10, z1: -1, note: 'En suite' },
+  { id: 'bath1', name: 'Bath 1', level: 2, x0: 11, x1: 15, z0: -1, z1: 3, note: '' },
+  { id: 'guest2', name: 'Guest 2', level: 2, x0: 11, x1: 18, z0: 3, z1: 11, note: 'En suite' },
+  { id: 'bath2', name: 'Bath 2', level: 2, x0: 15, x1: 18, z0: -1, z1: 3, note: '' },
   {
     id: 'terrace2',
-    name: 'Suite Terrace',
+    name: 'Terrace',
     level: 2,
     x0: -18,
-    x1: 4,
+    x1: 8,
     z0: -16,
     z1: -12,
     note: 'Off primary',
@@ -127,10 +120,20 @@ export const L2_ROOMS = [
 ]
 
 export const L3_ROOMS = [
-  { id: 'stairs3', name: 'Stair', level: 3, x0: 6, x1: 11, z0: 4, z1: 10, note: '', stair: true },
-  { id: 'lounge', name: 'Sky Lounge', level: 3, x0: -4, x1: 6, z0: 4, z1: 11, note: 'Covered' },
-  { id: 'summer', name: 'Summer Kitchen', level: 3, x0: 11, x1: 18, z0: 2, z1: 10, note: 'Outdoor', outdoor: true },
-  { id: 'bath3', name: 'Bath', level: 3, x0: 6, x1: 9, z0: 10, z1: 12, note: '' },
+  { id: 'stairs3', name: 'Stair', level: 3, x0: 6, x1: 11, z0: 5, z1: 11, note: '', stair: true },
+  { id: 'lounge', name: 'Sky Lounge', level: 3, x0: -2, x1: 6, z0: 5, z1: 11, note: 'Covered' },
+  {
+    id: 'summer',
+    name: 'Summer Kitchen',
+    level: 3,
+    x0: 11,
+    x1: 18,
+    z0: 4,
+    z1: 11,
+    note: '',
+    outdoor: true,
+  },
+  { id: 'bath3', name: 'Bath', level: 3, x0: 6, x1: 9, z0: 11, z1: 12, note: '' },
   {
     id: 'rooftop',
     name: 'Roof Deck',
@@ -138,19 +141,8 @@ export const L3_ROOMS = [
     x0: -18,
     x1: 18,
     z0: -12,
-    z1: 4,
-    note: 'Open sky',
-    outdoor: true,
-  },
-  {
-    id: 'sundeck',
-    name: 'Sun Deck',
-    level: 3,
-    x0: -18,
-    x1: -8,
-    z0: -10,
-    z1: -4,
-    note: 'Loungers',
+    z1: 5,
+    note: 'Open',
     outdoor: true,
   },
 ]
@@ -158,211 +150,148 @@ export const L3_ROOMS = [
 export const ALL_PLAN_ROOMS = [...L1_ROOMS, ...L2_ROOMS, ...L3_ROOMS]
 
 export const WATER = {
-  pool: { x0: -4, x1: 10, z0: -9, z1: -4, depth: 1.25 }, // 14 × 5 m
+  pool: { x0: -4, x1: 10, z0: -9, z1: -4, depth: 1.25 },
   spa: { x0: -10, x1: -5, z0: -8, z1: -4, depth: 0.9 },
 }
 
-// ─── L1 walls ───────────────────────────────────────────────────────────────
+// ─── L1 — exterior + minimal interiors ──────────────────────────────────────
 
 export const L1_EXTERIOR_WALLS = [
-  W('l1-n0', E.x0, E.z0, 2, E.z0, {
+  W('l1-n', E.x0, E.z0, E.x1, E.z0, {
     thickness: Te,
     kind: 'glass',
-    openings: [{ id: 'great-slide', t: 10, width: 8, type: 'opening' }],
+    openings: [{ id: 'terrace-slide', t: 20, width: 12, type: 'opening' }],
   }),
-  W('l1-n1', 2, E.z0, 12, E.z0, {
-    thickness: Te,
-    kind: 'glass',
-    openings: [{ id: 'kit-slide', t: 5, width: 4, type: 'opening' }],
-  }),
-  W('l1-n2', 12, E.z0, E.x1, E.z0, { thickness: Te, kind: 'glass' }),
-  W('l1-e0', E.x1, E.z0, E.x1, -1, { thickness: Te, kind: 'exterior' }),
-  W('l1-e1', E.x1, -1, E.x1, 6, { thickness: Te, kind: 'exterior' }),
-  W('l1-e2', E.x1, 6, E.x1, E.z1, { thickness: Te, kind: 'exterior' }),
-  W('l1-s0', E.x1, E.z1, 11, E.z1, { thickness: Te, kind: 'exterior' }),
-  W('l1-s1', 11, E.z1, 3.5, E.z1, { thickness: Te, kind: 'exterior' }),
-  W('l1-s2', 3.5, E.z1, -3.5, E.z1, {
+  W('l1-e', E.x1, E.z0, E.x1, E.z1, { thickness: Te, kind: 'exterior' }),
+  W('l1-s0', E.x1, E.z1, 3, E.z1, { thickness: Te, kind: 'exterior' }),
+  W('l1-s1', 3, E.z1, -3, E.z1, {
     thickness: Te,
     kind: 'exterior',
-    openings: [{ id: 'entry', t: 3.5, width: 2.8, type: 'door' }],
+    openings: [{ id: 'entry', t: 3, width: 2.8, type: 'door' }],
   }),
-  W('l1-s3', -3.5, E.z1, E.x0, E.z1, { thickness: Te, kind: 'exterior' }),
-  W('l1-w0', E.x0, E.z1, E.x0, 1, { thickness: Te, kind: 'exterior' }),
-  W('l1-w1', E.x0, 1, E.x0, E.z0, { thickness: Te, kind: 'exterior' }),
+  W('l1-s2', -3, E.z1, E.x0, E.z1, { thickness: Te, kind: 'exterior' }),
+  W('l1-w', E.x0, E.z1, E.x0, E.z0, { thickness: Te, kind: 'exterior' }),
 ]
 
+/**
+ * Few interiors only:
+ * - Foyer pocket at entry
+ * - Service core (powder + stair + laundry) along south-east
+ * - Office + pantry on east (kitchen stays open to great room)
+ */
 export const L1_INTERIOR_WALLS = [
-  // Gallery
-  W('l1-gw0', -2, E.z0, -2, 1),
-  W('l1-gw1', -2, 1, -2, 8),
-  W('l1-ge0', 2, E.z0, 2, -1),
-  W('l1-ge1', 2, -1, 2, 1),
-  W('l1-ge2', 2, 1, 2, 4),
-  W('l1-ge3', 2, 4, 2, 8),
+  // Foyer — open north into great room
+  W('foy-w', -3, 8, -3, 12),
+  W('foy-e', 3, 8, 3, 12),
+  W('foy-n', -3, 8, 3, 8, {
+    openings: [{ id: 'to-living', t: 3, width: 3.2, type: 'opening' }],
+  }),
 
-  // Foyer
-  W('l1-fw', -3.5, 8, -3.5, 12),
-  W('l1-fe', 3.5, 8, 3.5, 12),
-  W('l1-fn0', -3.5, 8, -2, 8),
-  W('l1-fn1', -2, 8, 2, 8, {
-    openings: [{ id: 'foyer-open', t: 2, width: 2.4, type: 'opening' }],
-  }),
-  W('l1-fn2', 2, 8, 3.5, 8),
-
-  // Open living | kitchen (wide opening)
-  W('l1-z-1', 2, -1, 12, -1, {
-    openings: [{ id: 'great-kit', t: 5, width: 4, type: 'opening' }],
-  }),
-  W('l1-x12a', 12, E.z0, 12, -6),
-  W('l1-x12b', 12, -6, 12, -1, {
-    openings: [{ id: 'pantry-door', t: 2.5, width: 0.9, type: 'door' }],
-  }),
-  W('l1-x12c', 12, -1, 12, 6, {
-    openings: [{ id: 'office-door', t: 3, width: 1.0, type: 'door' }],
-  }),
-  W('l1-pan-s', 12, -6, E.x1, -6),
-  W('l1-off-n', 12, 6, E.x1, 6),
-
-  // Powder + stair + laundry
-  W('l1-z1e', 2, 1, 6, 1),
-  W('l1-z1e2', 6, 1, 11, 1),
-  W('l1-pow-s', 3, 4, 6, 4, {
+  // Service core block: x 3..16, z 5..11
+  W('core-w', 3, 5, 3, 8),
+  W('core-s', 3, 5, 11, 5),
+  W('pow-e', 6, 5, 6, 8, {
     openings: [{ id: 'powder', t: 1.5, width: 0.8, type: 'door' }],
   }),
-  W('l1-pow-e', 6, 4, 6, 7),
-  W('l1-pow-n', 3, 7, 6, 7),
-  W('l1-pow-w', 3, 4, 3, 7),
-  W('l1-st-w0', 6, 1, 6, 4),
-  W('l1-st-w1', 6, 4, 6, 7, {
-    openings: [{ id: 'stair', t: 1.5, width: 1.1, type: 'opening' }],
+  W('st-e', 11, 5, 11, 11),
+  W('st-n', 6, 11, 11, 11),
+  W('st-open', 6, 5, 6, 11, {
+    openings: [{ id: 'stair', t: 3, width: 1.2, type: 'opening' }],
   }),
-  W('l1-st-w2', 6, 7, 6, 10),
-  W('l1-st-e0', 11, 1, 11, 7),
-  W('l1-st-e1', 11, 7, 11, 10),
-  W('l1-st-n', 6, 10, 11, 10),
-  W('l1-st-s', 6, 4, 11, 4),
-  W('l1-lau-s', 11, 7, 16, 7),
-  W('l1-lau-e', 16, 7, 16, 11),
-  W('l1-lau-e2', 16, 11, 16, 12),
-  W('l1-lau-n', 11, 11, 16, 11),
-  W('l1-lau-tie', 11, 10, 11, 11),
-  W('l1-lau-tie2', 11, 11, 11, 12),
+  W('lau-s', 11, 8, 16, 8),
+  W('lau-e', 16, 8, 16, 11),
+  W('lau-n', 11, 11, 16, 11),
+
+  // East rooms — kitchen open (no wall at kitchen/great)
+  W('off-s', 8, 0, 14, 0, {
+    openings: [{ id: 'office', t: 3, width: 1.0, type: 'door' }],
+  }),
+  W('off-w', 8, 0, 8, 6),
+  W('off-n', 8, 6, 14, 6),
+  W('off-e', 14, 0, 14, 6),
+  W('pan-s', 14, 0, E.x1, 0, {
+    openings: [{ id: 'pantry', t: 2, width: 0.9, type: 'door' }],
+  }),
+  W('pan-n', 14, 4, E.x1, 4),
 ]
 
-// ─── L2 walls ───────────────────────────────────────────────────────────────
+// ─── L2 — simple suite split ────────────────────────────────────────────────
 
 export const L2_EXTERIOR_WALLS = [
-  W('l2-n0', E.x0, E.z0, -4, E.z0, {
+  W('l2-n', E.x0, E.z0, E.x1, E.z0, {
     thickness: Te,
     kind: 'glass',
     level: 2,
-    openings: [{ id: 'primary-slide', t: 7, width: 6, type: 'opening' }],
+    openings: [{ id: 'primary-slide', t: 12, width: 8, type: 'opening' }],
   }),
-  W('l2-n1', -4, E.z0, 4, E.z0, { thickness: Te, kind: 'glass', level: 2 }),
-  W('l2-n2', 4, E.z0, 12, E.z0, { thickness: Te, kind: 'glass', level: 2 }),
-  W('l2-n3', 12, E.z0, E.x1, E.z0, { thickness: Te, kind: 'glass', level: 2 }),
-  W('l2-e0', E.x1, E.z0, E.x1, 0, { thickness: Te, kind: 'exterior', level: 2 }),
-  W('l2-e1', E.x1, 0, E.x1, 4, { thickness: Te, kind: 'exterior', level: 2 }),
-  W('l2-e2', E.x1, 4, E.x1, E.z1, { thickness: Te, kind: 'exterior', level: 2 }),
-  W('l2-s0', E.x1, E.z1, 11, E.z1, { thickness: Te, kind: 'exterior', level: 2 }),
-  W('l2-s1', 11, E.z1, 2, E.z1, { thickness: Te, kind: 'exterior', level: 2 }),
-  W('l2-s2', 2, E.z1, -2, E.z1, { thickness: Te, kind: 'exterior', level: 2 }),
-  W('l2-s3', -2, E.z1, E.x0, E.z1, { thickness: Te, kind: 'exterior', level: 2 }),
-  W('l2-w0', E.x0, E.z1, E.x0, 9, { thickness: Te, kind: 'exterior', level: 2 }),
-  W('l2-w1', E.x0, 9, E.x0, 2, { thickness: Te, kind: 'exterior', level: 2 }),
-  W('l2-w2', E.x0, 2, E.x0, E.z0, { thickness: Te, kind: 'exterior', level: 2 }),
+  W('l2-e', E.x1, E.z0, E.x1, E.z1, { thickness: Te, kind: 'exterior', level: 2 }),
+  W('l2-s', E.x1, E.z1, E.x0, E.z1, { thickness: Te, kind: 'exterior', level: 2 }),
+  W('l2-w', E.x0, E.z1, E.x0, E.z0, { thickness: Te, kind: 'exterior', level: 2 }),
 ]
 
 export const L2_INTERIOR_WALLS = [
-  W('l2-hw0', -2, E.z0, -2, 2, { level: 2 }),
-  W('l2-hw1', -2, 2, -2, 8, { level: 2 }),
-  W('l2-he0', 2, E.z0, 2, -2, { level: 2 }),
-  W('l2-he1', 2, -2, 2, 4, { level: 2 }),
-  W('l2-he2', 2, 4, 2, 8, { level: 2 }),
-  W('l2-ht0', -2, 8, 2, 8, {
+  // Primary | landing / guests  at x=2 and x=11
+  W('pri-e', 2, E.z0, 2, 5, {
     level: 2,
-    openings: [{ id: 'elev', t: 2, width: 1.2, type: 'opening' }],
+    openings: [{ id: 'primary', t: 8, width: 1.2, type: 'door' }],
   }),
+  W('pri-e2', 2, 5, 2, E.z1, { level: 2 }),
+  W('suite-n', E.x0, 5, -10, 5, { level: 2 }),
+  W('suite-n2', -10, 5, 2, 5, {
+    level: 2,
+    openings: [{ id: 'to-dress', t: 6, width: 1.0, type: 'door' }],
+  }),
+  W('dress-e', -10, 5, -10, E.z1, {
+    level: 2,
+    openings: [{ id: 'dress-bath', t: 3, width: 0.9, type: 'door' }],
+  }),
+  W('bath-n', -10, 11, 2, 11, { level: 2 }),
+  W('dress-n', E.x0, 11, -10, 11, { level: 2 }),
 
-  // Primary suite
-  W('l2-pe', -4, E.z0, -4, 2, {
+  // Stair + landing
+  W('st2-w', 6, 5, 6, 11, {
     level: 2,
-    openings: [{ id: 'primary-door', t: 6, width: 1.1, type: 'door' }],
+    openings: [{ id: 'stair2', t: 3, width: 1.2, type: 'opening' }],
   }),
-  W('l2-z2a', E.x0, 2, -10, 2, { level: 2 }),
-  W('l2-z2b', -10, 2, -4, 2, { level: 2 }),
-  W('l2-z2c', -4, 2, -2, 2, { level: 2 }),
-  W('l2-dx', -10, 2, -10, 9, {
-    level: 2,
-    openings: [{ id: 'dress-bath', t: 3.5, width: 0.9, type: 'door' }],
-  }),
-  W('l2-dn', E.x0, 9, -10, 9, { level: 2 }),
-  W('l2-bn', -10, 9, -4, 9, { level: 2 }),
-  W('l2-be', -4, 2, -4, 9, { level: 2 }),
+  W('st2-e', 11, 5, 11, 11, { level: 2 }),
+  W('st2-s', 6, 5, 11, 5, { level: 2 }),
+  W('st2-n', 6, 11, 11, 11, { level: 2 }),
+  W('land-s', 2, 5, 6, 5, { level: 2 }),
 
-  // Guests
-  W('l2-z-1e', 2, -1, 4, -1, { level: 2 }),
-  W('l2-z-1e2', 4, -1, 12, -1, {
+  // Guest wing east of stair
+  W('g-w', 11, E.z0, 11, -1, { level: 2 }),
+  W('g-w2', 11, -1, 11, 3, {
     level: 2,
-    openings: [{ id: 'g1-door', t: 4, width: 0.9, type: 'door' }],
+    openings: [{ id: 'g1', t: 2, width: 0.9, type: 'door' }],
   }),
-  W('l2-z-1e3', 12, -1, 16, -1, { level: 2 }),
-  W('l2-x4a', 4, E.z0, 4, -1, { level: 2 }),
-  W('l2-x4b', 4, -1, 4, 4, {
+  W('g-w3', 11, 3, 11, 5, { level: 2 }),
+  W('g-w4', 11, 5, 11, 11, {
     level: 2,
-    openings: [{ id: 'g2-door', t: 2.5, width: 0.9, type: 'door' }],
+    openings: [{ id: 'g2', t: 3, width: 0.9, type: 'door' }],
   }),
-  W('l2-x4c', 4, 4, 4, 8, { level: 2 }),
-  W('l2-x12a', 12, E.z0, 12, -5, { level: 2 }),
-  W('l2-x12b', 12, -5, 12, -1, { level: 2 }),
-  W('l2-x12c', 12, -1, 12, 0, { level: 2 }),
-  W('l2-x12d', 12, 0, 12, 4, { level: 2 }),
-  W('l2-b1n', 12, -5, 16, -5, { level: 2 }),
-  W('l2-b2n', 12, 0, 16, 0, { level: 2 }),
-  W('l2-x16a', 16, E.z0, 16, -5, { level: 2 }),
-  W('l2-x16b', 16, -5, 16, 0, { level: 2 }),
-  W('l2-x16c', 16, 0, 16, 4, { level: 2 }),
-  W('l2-x16d', 16, 4, 16, 11, {
-    level: 2,
-    openings: [{ id: 'media-door', t: 3, width: 1.0, type: 'door' }],
-  }),
-  W('l2-x16e', 16, 11, 16, 12, { level: 2 }),
-  W('l2-med-n', 11, 11, 16, 11, { level: 2 }),
-  W('l2-med-tie', 11, 10, 11, 11, { level: 2 }),
-
-  // Stair
-  W('l2-st-w', 6, 4, 6, 10, { level: 2 }),
-  W('l2-st-e', 11, 4, 11, 10, { level: 2 }),
-  W('l2-st-n', 6, 10, 11, 10, { level: 2 }),
-  W('l2-st-s', 6, 4, 11, 4, {
-    level: 2,
-    openings: [{ id: 'stair2', t: 2.5, width: 1.1, type: 'opening' }],
-  }),
-  W('l2-med-s', 11, 4, 16, 4, { level: 2 }),
-  W('l2-med-s2', 16, 4, E.x1, 4, { level: 2 }),
-  W('l2-g2-n', 4, 8, 6, 8, { level: 2 }),
+  W('g-mid', 11, -1, E.x1, -1, { level: 2 }),
+  W('g-bath', 11, 3, E.x1, 3, { level: 2 }),
+  W('bath-split', 15, -1, 15, 3, { level: 2 }),
 ]
 
-// ─── L3 roof ────────────────────────────────────────────────────────────────
+// ─── Roof ───────────────────────────────────────────────────────────────────
 
 export const L3_WALLS = [
-  W('l3-ln', -4, 4, 6, 4, {
+  W('l3-ln', -2, 5, 6, 5, {
     level: 3,
     kind: 'exterior',
-    openings: [{ id: 'lounge-open', t: 5, width: 5, type: 'opening' }],
+    openings: [{ id: 'lounge', t: 4, width: 4, type: 'opening' }],
   }),
-  W('l3-le', 6, 4, 6, 10, { level: 3, kind: 'exterior' }),
-  W('l3-le2', 6, 10, 6, 11, { level: 3, kind: 'exterior' }),
-  W('l3-ls', 6, 11, -4, 11, { level: 3, kind: 'exterior' }),
-  W('l3-lw', -4, 11, -4, 4, { level: 3, kind: 'exterior' }),
-  W('l3-st-w', 6, 4, 6, 10, { level: 3 }),
-  W('l3-st-e', 11, 4, 11, 10, { level: 3 }),
-  W('l3-st-s', 6, 4, 11, 4, { level: 3 }),
-  W('l3-st-n', 6, 10, 11, 10, { level: 3 }),
-  W('l3-b-w', 6, 10, 6, 12, { level: 3 }),
-  W('l3-b-e', 9, 10, 9, 12, { level: 3 }),
+  W('l3-le', 6, 5, 6, 11, { level: 3, kind: 'exterior' }),
+  W('l3-ls', 6, 11, -2, 11, { level: 3, kind: 'exterior' }),
+  W('l3-lw', -2, 11, -2, 5, { level: 3, kind: 'exterior' }),
+  W('l3-st-e', 11, 5, 11, 11, { level: 3 }),
+  W('l3-st-s', 6, 5, 11, 5, { level: 3 }),
+  W('l3-st-n', 6, 11, 11, 11, { level: 3 }),
+  W('l3-b-w', 6, 11, 6, 12, { level: 3 }),
+  W('l3-b-e', 9, 11, 9, 12, { level: 3 }),
   W('l3-b-n', 6, 12, 9, 12, { level: 3 }),
-  W('l3-b-s', 6, 10, 9, 10, {
+  W('l3-b-s', 6, 11, 9, 11, {
     level: 3,
     openings: [{ id: 'roof-bath', t: 1.5, width: 0.8, type: 'door' }],
   }),
