@@ -18,11 +18,11 @@ const KIND_COLOR = {
   railing: 0x6a7a88,
 }
 
-export const SHEET_GAP = 10
+export const SHEET_GAP = 0
 
-function sheetOffsetX(level) {
-  const plateW = PLAN_META.envelope.x1 - PLAN_META.envelope.x0
-  return (level - 1) * (plateW + SHEET_GAP)
+/** All sheets share the same origin — only one visible at a time. */
+function sheetOffsetX(_level) {
+  return 0
 }
 
 function makeRoomLabel(room, y, tone = 'l1') {
@@ -282,17 +282,25 @@ export function createPlanDebug() {
 
   root.add(l1, l2, l3)
 
-  const plateW = PLAN_META.envelope.x1 - PLAN_META.envelope.x0
-  const midX = plateW + SHEET_GAP
+  // One floor per view — hide L2/L3 until selected
+  l1.visible = true
+  l2.visible = false
+  l3.visible = false
+
   const env = PLAN_META.envelope
 
   return {
     root,
     report,
     sheets: { l1, l2, l3 },
+    titles: {
+      l1: 'Level 1 — Main living',
+      l2: 'Level 2 — Private suites',
+      l3: 'Roof — Terrace',
+    },
     frame: {
-      target: { x: midX, y: 0, z: (env.z0 + env.z1) / 2 },
-      position: { x: midX, y: 72, z: 48 },
+      target: { x: 0, y: 0, z: (env.z0 + env.z1) / 2 },
+      position: { x: 0, y: 52, z: 34 },
     },
   }
 }

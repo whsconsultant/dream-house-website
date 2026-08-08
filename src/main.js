@@ -1,6 +1,6 @@
 /**
  * Layer 2 — Combined full-floor house (UPH A+B as one)
- * Three separate floor-plan sheets.
+ * Each floor has its own full-viewport view (tabs switch floors).
  */
 import './style.css'
 import * as THREE from 'three'
@@ -36,58 +36,46 @@ const sun = new THREE.DirectionalLight(0xffe2b0, 1.0)
 sun.position.set(30, 50, 20)
 scene.add(sun)
 
-const { root, report, sheets, frame } = createPlanDebug()
+const { root, report, sheets, titles, frame } = createPlanDebug()
 scene.add(root)
-
-camera.position.set(frame.position.x, frame.position.y, frame.position.z)
-camera.lookAt(frame.target.x, frame.target.y, frame.target.z)
 
 const badge = document.querySelector('.layer-badge')
 if (badge) {
   badge.textContent = report.ok
-    ? `Layer 2 · A+B one house · ${report.wallCount} walls · joins OK`
+    ? `Layer 2 · A+B one house · joins OK`
     : `Layer 2 · ${report.orphanCount} free ends`
 }
 
 const meta = document.querySelector('.plan-meta')
-if (meta) {
-  meta.textContent = `${PLAN_META.title} — ${PLAN_META.subtitle}`
-}
 
 const controls = new OrbitControls(camera, canvas)
-controls.target.set(frame.target.x, frame.target.y, frame.target.z)
 controls.enableDamping = true
 controls.maxPolarAngle = Math.PI * 0.48
-controls.minDistance = 20
-controls.maxDistance = 160
+controls.minDistance = 18
+controls.maxDistance = 100
 
-function focusSheet(which) {
-  sheets.l1.visible = which === 'both' || which === 'l1'
-  sheets.l2.visible = which === 'both' || which === 'l2'
-  sheets.l3.visible = which === 'both' || which === 'l3'
-  const env = PLAN_META.envelope
-  const cz = (env.z0 + env.z1) / 2
-  if (which === 'l1') {
-    controls.target.set(sheets.l1.position.x, 0, cz)
-    camera.position.set(sheets.l1.position.x, 55, 36)
-  } else if (which === 'l2') {
-    controls.target.set(sheets.l2.position.x, 0, cz)
-    camera.position.set(sheets.l2.position.x, 55, 36)
-  } else if (which === 'l3') {
-    controls.target.set(sheets.l3.position.x, 0, cz)
-    camera.position.set(sheets.l3.position.x, 55, 36)
-  } else {
-    controls.target.set(frame.target.x, frame.target.y, frame.target.z)
-    camera.position.set(frame.position.x, frame.position.y, frame.position.z)
-  }
+function showFloor(which) {
+  sheets.l1.visible = which === 'l1'
+  sheets.l2.visible = which === 'l2'
+  sheets.l3.visible = which === 'l3'
+
+  controls.target.set(frame.target.x, frame.target.y, frame.target.z)
+  camera.position.set(frame.position.x, frame.position.y, frame.position.z)
   controls.update()
+
+  if (meta) {
+    meta.textContent = `${PLAN_META.title} — ${titles[which]}`
+  }
 }
+
+// Default: Level 1 only
+showFloor('l1')
 
 document.querySelectorAll('[data-plan]').forEach((btn) => {
   btn.addEventListener('click', () => {
     document.querySelectorAll('[data-plan]').forEach((b) => b.classList.remove('is-active'))
     btn.classList.add('is-active')
-    focusSheet(btn.dataset.plan)
+    showFloor(btn.dataset.plan)
   })
 })
 
@@ -104,4 +92,4 @@ window.addEventListener('resize', () => {
   renderer.setSize(window.innerWidth, window.innerHeight)
 })
 
-window.__plan = { PLAN_META, validateWallJoins, report, focusSheet }
+window.__plan = { PLAN_META, validateWallJoins, report, showFloor }
