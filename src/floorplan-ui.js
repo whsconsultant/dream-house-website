@@ -1,8 +1,8 @@
 import { PLAN_META, L1_ROOMS, L2_ROOMS } from './world/floorplan-data.js'
 
 /**
- * Renders an interactive SVG floor plan into a container.
- * Click a room → callback(roomId).
+ * Interactive SVG floor plan — drawn like a residential sales plan,
+ * not a campus diagram.
  */
 export function mountFloorPlan(container, { onSelectRoom, activeId = null } = {}) {
   let level = 1
@@ -11,10 +11,10 @@ export function mountFloorPlan(container, { onSelectRoom, activeId = null } = {}
   root.className = 'floorplan'
   container.appendChild(root)
 
+  const { xMin, xMax, zMin, zMax, envelope, scaleBarMeters } = PLAN_META
+  const pad = 6
+
   function worldToSvg(x, z) {
-    // Plan: X right, Z down on screen (entrance at bottom)
-    const { xMin, xMax, zMin, zMax } = PLAN_META
-    const pad = 4
     const w = 100 - pad * 2
     const h = 100 - pad * 2
     const sx = pad + ((x - xMin) / (xMax - xMin)) * w
@@ -22,144 +22,117 @@ export function mountFloorPlan(container, { onSelectRoom, activeId = null } = {}
     return [sx, sy]
   }
 
-  function roomRect(room) {
-    const [x0, y0] = worldToSvg(room.x0, room.z1)
-    const [x1, y1] = worldToSvg(room.x1, room.z0)
+  function rectFromBounds(b) {
+    const [x0, y0] = worldToSvg(b.x0, b.z1)
+    const [x1, y1] = worldToSvg(b.x1, b.z0)
     return {
       x: Math.min(x0, x1),
       y: Math.min(y0, y1),
       w: Math.abs(x1 - x0),
       h: Math.abs(y1 - y0),
     }
-  }
-
-  function waterRect(w) {
-    const [x0, y0] = worldToSvg(w.x0, w.z1)
-    const [x1, y1] = worldToSvg(w.x1, w.z0)
-    return {
-      x: Math.min(x0, x1),
-      y: Math.min(y0, y1),
-      w: Math.abs(x1 - x0),
-      h: Math.abs(y1 - y0),
-    }
-  }
-
-  function labelPos(room) {
-    const r = roomRect(room)
-    return [r.x + r.w / 2, r.y + r.h / 2]
   }
 
   function render() {
     const rooms = level === 1 ? L1_ROOMS : L2_ROOMS
-    const glassY = worldToSvg(0, PLAN_META.glassLineZ)[1]
-    const l2LimitY = worldToSvg(0, PLAN_META.l2LimitZ)[1]
+    const env = rectFromBounds(envelope)
+    const scaleStart = worldToSvg(envelope.x0, envelope.z0 - 1.5)
+    const scaleEnd = worldToSvg(envelope.x0 + scaleBarMeters, envelope.z0 - 1.5)
 
     const roomPolys = rooms
       .map((room) => {
-        const r = roomRect(room)
-        const [lx, ly] = labelPos(room)
+        const r = rectFromBounds(room)
+        const lx = r.x + r.w / 2
+        const ly = r.y + r.h / 2
         const isActive = room.id === activeId
         const cls = [
           'fp-room',
           room.outdoor ? 'fp-room--out' : '',
           room.void ? 'fp-room--void' : '',
           room.stair ? 'fp-room--stair' : '',
+          room.corridor ? 'fp-room--corridor' : '',
           isActive ? 'is-active' : '',
         ]
           .filter(Boolean)
           .join(' ')
 
-        let waterSvg = ''
+        let extras = ''
         if (room.water) {
-          const w = waterRect(room.water)
-          waterSvg += `<rect class="fp-water" x="${w.x}" y="${w.y}" width="${w.w}" height="${w.h}" rx="0.4" />`
+          const w = rectFromBounds(room.water)
+          extras += `<rect class="fp-water" x="${w.x}" y="${w.y}" width="${w.w}" height="${w.h}" rx="0.35" />`
         }
         if (room.water2) {
-          const w = waterRect(room.water2)
-          waterSvg += `<rect class="fp-water" x="${w.x}" y="${w.y}" width="${w.w}" height="${w.h}" rx="0.4" />`
+          const w = rectFromBounds(room.water2)
+          extras += `<rect class="fp-water fp-water--spa" x="${w.x}" y="${w.y}" width="${w.w}" height="${w.h}" rx="0.35" />`
         }
 
-        const fontSize = Math.min(2.4, Math.max(1.5, r.w * 0.12))
+        const nameSize = Math.min(2.2, Math.max(1.35, Math.min(r.w, r.h) * 0.18))
+        const showNote = room.note && r.w > 6 && r.h > 5
+
         return `
           <g class="${cls}" data-room="${room.id}" role="button" tabindex="0">
             <rect class="fp-room__fill" x="${r.x}" y="${r.y}" width="${r.w}" height="${r.h}" />
-            ${waterSvg}
-            <text class="fp-room__name" x="${lx}" y="${ly - 0.6}" font-size="${fontSize}">${room.name}</text>
-            <text class="fp-room__note" x="${lx}" y="${ly + 1.4}" font-size="${fontSize * 0.65}">${room.note || ''}</text>
+            ${extras}
+            <text class="fp-room__name" x="${lx}" y="${showNote ? ly - 0.7 : ly}" font-size="${nameSize}">${room.name}</text>
+            ${showNote ? `<text class="fp-room__note" x="${lx}" y="${ly + 1.2}" font-size="${nameSize * 0.7}">${room.note}</text>` : ''}
           </g>
         `
       })
       .join('')
 
-    // Building outline (enclosed)
-    const [bx0, by0] = worldToSvg(-44, 26)
-    const [bx1, by1] = worldToSvg(44, -26)
-    const building = {
-      x: Math.min(bx0, bx1),
-      y: Math.min(by0, by1),
-      w: Math.abs(bx1 - bx0),
-      h: Math.abs(by1 - by0),
-    }
-
-    // Terrace outline
-    const [tx0, ty0] = worldToSvg(-42, -26)
-    const [tx1, ty1] = worldToSvg(42, -50)
-    const terrace = {
-      x: Math.min(tx0, tx1),
-      y: Math.min(ty0, ty1),
-      w: Math.abs(tx1 - tx0),
-      h: Math.abs(ty1 - ty0),
-    }
+    const levelLabel = level === 1 ? 'Main Level' : 'Roof Terrace'
+    const levelHint =
+      level === 1
+        ? 'Open living along the view · suites to the sides · elevator foyer'
+        : 'Residential pool & spa on open roof · summer kitchen · sky lounge pavilion'
 
     root.innerHTML = `
       <header class="floorplan__head">
         <div>
-          <p class="floorplan__eyebrow">Architectural plan</p>
+          <p class="floorplan__eyebrow">Sales plan · duplex penthouse</p>
           <h2 class="floorplan__title">${PLAN_META.title}</h2>
           <p class="floorplan__sub">${PLAN_META.subtitle}</p>
         </div>
         <div class="floorplan__tabs" role="tablist">
-          <button type="button" class="floorplan__tab ${level === 1 ? 'is-on' : ''}" data-level="1">Level 1</button>
-          <button type="button" class="floorplan__tab ${level === 2 ? 'is-on' : ''}" data-level="2">Level 2</button>
+          <button type="button" class="floorplan__tab ${level === 1 ? 'is-on' : ''}" data-level="1">Main Level</button>
+          <button type="button" class="floorplan__tab ${level === 2 ? 'is-on' : ''}" data-level="2">Roof Terrace</button>
         </div>
       </header>
 
+      <p class="floorplan__level-hint">${levelLabel} — ${levelHint}</p>
+
       <div class="floorplan__canvas">
-        <svg viewBox="0 0 100 100" class="floorplan__svg" aria-label="Floor plan level ${level}">
+        <svg viewBox="0 0 100 100" class="floorplan__svg" aria-label="${levelLabel} floor plan">
           <rect class="fp-bg" x="0" y="0" width="100" height="100" />
 
           ${
-            level === 1
-              ? `<rect class="fp-terrace-plate" x="${terrace.x}" y="${terrace.y}" width="${terrace.w}" height="${terrace.h}" />`
+            level === 2
+              ? `<rect class="fp-roof-plate" x="${env.x}" y="${env.y}" width="${env.w}" height="${env.h}" />`
               : ''
           }
 
-          <rect class="fp-building" x="${building.x}" y="${building.y}" width="${building.w}" height="${building.h}" />
-
-          ${
-            level === 1
-              ? `<line class="fp-glass" x1="${building.x}" y1="${glassY}" x2="${building.x + building.w}" y2="${glassY}" />
-                 <text class="fp-axis" x="50" y="${glassY - 1.2}" font-size="1.6">Glass line · open to terrace</text>`
-              : `<line class="fp-limit" x1="${building.x}" y1="${l2LimitY}" x2="${building.x + building.w}" y2="${l2LimitY}" />
-                 <text class="fp-axis" x="50" y="${l2LimitY - 1.2}" font-size="1.6">L2 setback · terrace open below</text>
-                 <rect class="fp-void-hint" x="${terrace.x}" y="${terrace.y}" width="${terrace.w}" height="${terrace.h + (building.y + building.h - l2LimitY) * 0}" opacity="0" />
-                 <text class="fp-axis fp-axis--muted" x="50" y="${(terrace.y + l2LimitY) / 2}" font-size="1.5">Open to sky (no slab)</text>`
-          }
+          <rect class="fp-building" x="${env.x}" y="${env.y}" width="${env.w}" height="${env.h}" />
 
           ${roomPolys}
 
-          <text class="fp-compass" x="92" y="8" font-size="1.8">N</text>
-          <path class="fp-compass-arrow" d="M92 10 L92 14 M90.5 11.2 L92 10 L93.5 11.2" />
-          <text class="fp-compass" x="50" y="97" font-size="1.5">Entrance</text>
+          <!-- Scale bar -->
+          <line class="fp-scale" x1="${scaleStart[0]}" y1="${scaleStart[1]}" x2="${scaleEnd[0]}" y2="${scaleEnd[1]}" />
+          <line class="fp-scale" x1="${scaleStart[0]}" y1="${scaleStart[1] - 0.6}" x2="${scaleStart[0]}" y2="${scaleStart[1] + 0.6}" />
+          <line class="fp-scale" x1="${scaleEnd[0]}" y1="${scaleEnd[1] - 0.6}" x2="${scaleEnd[0]}" y2="${scaleEnd[1] + 0.6}" />
+          <text class="fp-scale-label" x="${(scaleStart[0] + scaleEnd[0]) / 2}" y="${scaleStart[1] + 2.2}" font-size="1.5">${scaleBarMeters} m</text>
+
+          <text class="fp-compass" x="90" y="10" font-size="2">N</text>
+          <path class="fp-compass-arrow" d="M90 11.5 L90 16 M88.4 13 L90 11.5 L91.6 13" />
+          <text class="fp-compass" x="50" y="96" font-size="1.5">Entry</text>
         </svg>
       </div>
 
       <footer class="floorplan__legend">
-        <span><i class="fp-swatch fp-swatch--room"></i> Room</span>
-        <span><i class="fp-swatch fp-swatch--water"></i> Pool</span>
-        <span><i class="fp-swatch fp-swatch--out"></i> Outdoor</span>
-        <span><i class="fp-swatch fp-swatch--void"></i> Double height</span>
-        <p class="floorplan__hint">Click a room to visit in 3D</p>
+        <span><i class="fp-swatch fp-swatch--room"></i> Interior</span>
+        <span><i class="fp-swatch fp-swatch--out"></i> Terrace</span>
+        <span><i class="fp-swatch fp-swatch--water"></i> Pool / spa</span>
+        <span><i class="fp-swatch fp-swatch--void"></i> Open living</span>
+        <p class="floorplan__hint">Click a room · then rebuild 3D to match</p>
       </footer>
     `
 

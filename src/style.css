@@ -578,8 +578,35 @@ body {
   fill: #f3ebe0;
 }
 
-.fp-room--stair .fp-room__fill {
-  fill: #efe6d6;
+.fp-room--corridor .fp-room__fill {
+  fill: #f4f0e8;
+}
+
+.fp-roof-plate {
+  fill: #e4e8e0;
+  stroke: none;
+}
+
+.fp-scale {
+  stroke: #1a2430;
+  stroke-width: 0.35;
+}
+
+.fp-scale-label {
+  fill: #1a2430;
+  text-anchor: middle;
+  font-family: var(--font-ui);
+}
+
+.floorplan__level-hint {
+  margin: 0 0 0.75rem;
+  font-size: 0.8rem;
+  color: #5a6570;
+  line-height: 1.4;
+}
+
+.fp-water--spa {
+  fill: #9ec9d4;
 }
 
 .fp-room:hover .fp-room__fill,
