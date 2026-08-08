@@ -18,6 +18,43 @@ const KIND_COLOR = {
   railing: 0x6a7a88,
 }
 
+/** Flat plan label: name + W×D m + area */
+function makeRoomLabel(room, y, l2 = false) {
+  const w = room.x1 - room.x0
+  const d = room.z1 - room.z0
+  const m2 = Math.round(w * d)
+  const canvas = document.createElement('canvas')
+  canvas.width = 512
+  canvas.height = 160
+  const ctx = canvas.getContext('2d')
+  ctx.clearRect(0, 0, canvas.width, canvas.height)
+  ctx.fillStyle = l2 ? 'rgba(45, 70, 50, 0.82)' : 'rgba(26, 36, 48, 0.78)'
+  ctx.beginPath()
+  ctx.roundRect(16, 24, 480, 112, 16)
+  ctx.fill()
+  ctx.fillStyle = '#f4f0e8'
+  ctx.font = '600 44px "DM Sans", system-ui, sans-serif'
+  ctx.textAlign = 'center'
+  ctx.textBaseline = 'middle'
+  ctx.fillText(room.name, 256, 64)
+  ctx.font = '500 28px "DM Sans", system-ui, sans-serif'
+  ctx.fillStyle = 'rgba(244, 240, 232, 0.78)'
+  ctx.fillText(`${w.toFixed(0)}×${d.toFixed(0)} m · ${m2} m²`, 256, 108)
+
+  const tex = new THREE.CanvasTexture(canvas)
+  tex.colorSpace = THREE.SRGBColorSpace
+  const sprite = new THREE.Sprite(
+    new THREE.SpriteMaterial({ map: tex, transparent: true, depthTest: false }),
+  )
+  // Scale sprite so small rooms stay readable without covering neighbors
+  const span = Math.min(w, d, 6)
+  const scale = Math.max(2.2, Math.min(span * 0.85, 5.5))
+  sprite.scale.set(scale, scale * (160 / 512), 1)
+  sprite.position.set((room.x0 + room.x1) / 2, y, (room.z0 + room.z1) / 2)
+  sprite.renderOrder = 10
+  return sprite
+}
+
 export function createPlanDebug() {
   const root = new THREE.Group()
   root.name = 'plan-debug'
@@ -40,23 +77,31 @@ export function createPlanDebug() {
   plate.position.set((env.x0 + env.x1) / 2, 0.001, (env.z0 + env.z1) / 2)
   root.add(plate)
 
-  // Room fills (L1 only, very faint)
-  for (const room of ALL_PLAN_ROOMS.filter((r) => r.level === 1 && !r.outdoor)) {
+  // Room fills (L1 only, very faint) + name labels
+  for (const room of ALL_PLAN_ROOMS.filter((r) => r.level === 1)) {
     const w = room.x1 - room.x0
     const d = room.z1 - room.z0
     if (w <= 0 || d <= 0) continue
-    const mesh = new THREE.Mesh(
-      new THREE.PlaneGeometry(w, d),
-      new THREE.MeshBasicMaterial({
-        color: room.corridor ? 0xcfc8bc : room.stair ? 0xc4b8a8 : 0xe8e2d6,
-        transparent: true,
-        opacity: 0.35,
-        side: THREE.DoubleSide,
-      }),
-    )
-    mesh.rotation.x = -Math.PI / 2
-    mesh.position.set((room.x0 + room.x1) / 2, 0.002, (room.z0 + room.z1) / 2)
-    root.add(mesh)
+    if (!room.outdoor) {
+      const mesh = new THREE.Mesh(
+        new THREE.PlaneGeometry(w, d),
+        new THREE.MeshBasicMaterial({
+          color: room.corridor ? 0xcfc8bc : room.stair ? 0xc4b8a8 : 0xe8e2d6,
+          transparent: true,
+          opacity: 0.35,
+          side: THREE.DoubleSide,
+        }),
+      )
+      mesh.rotation.x = -Math.PI / 2
+      mesh.position.set((room.x0 + room.x1) / 2, 0.002, (room.z0 + room.z1) / 2)
+      root.add(mesh)
+    }
+    root.add(makeRoomLabel(room, 0.06))
+  }
+
+  // L2 room labels (slightly higher so they don't collide with L1)
+  for (const room of ALL_PLAN_ROOMS.filter((r) => r.level === 2)) {
+    root.add(makeRoomLabel(room, 0.18, true))
   }
 
   // Wall centerlines
@@ -110,6 +155,23 @@ export function createPlanDebug() {
     mesh.rotation.x = -Math.PI / 2
     mesh.position.set((rect.x0 + rect.x1) / 2, 0.01, (rect.z0 + rect.z1) / 2)
     root.add(mesh)
+  }
+
+  // Pool / spa labels
+  for (const [key, rect] of Object.entries(WATER)) {
+    root.add(
+      makeRoomLabel(
+        {
+          name: key === 'spa' ? 'Spa' : 'Pool',
+          x0: rect.x0,
+          x1: rect.x1,
+          z0: rect.z0,
+          z1: rect.z1,
+        },
+        0.2,
+        true,
+      ),
+    )
   }
 
   // Join dots — green if shared, amber if orphan
