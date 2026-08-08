@@ -1,6 +1,6 @@
 # Dream House — Full-Floor Penthouse
 
-Interactive WebGL walkthrough of a **12,400 sq ft** full-floor penthouse: great room, dining, kitchen, media lounge, library, master suite + spa, guest wing, and an infinity-pool terrace over a night city skyline.
+Interactive WebGL walkthrough of a **~28,000 sq ft duplex** penthouse in morning light: double-height great room, dining, chef kitchen, cinema, library, guest wing, spa, pool terrace, plus upper-level master suite, sky gym, sky lounge, and morning deck.
 
 ## Run locally
 

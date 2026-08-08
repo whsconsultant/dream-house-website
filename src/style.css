@@ -1,12 +1,12 @@
 :root {
-  --ink: #07090d;
-  --ink-soft: #12161e;
-  --glass: rgba(18, 24, 34, 0.55);
-  --line: rgba(232, 220, 196, 0.18);
-  --champagne: #e8dcc4;
+  --ink: #1a2430;
+  --ink-soft: #243040;
+  --glass: rgba(255, 250, 242, 0.42);
+  --line: rgba(36, 48, 64, 0.16);
+  --champagne: #f7f1e6;
   --bronze: #b8925a;
-  --amber: #f0b060;
-  --mist: rgba(210, 222, 236, 0.72);
+  --amber: #d4903a;
+  --mist: rgba(255, 248, 238, 0.82);
   --font-display: 'Fraunces', Georgia, serif;
   --font-ui: 'DM Sans', system-ui, sans-serif;
 }
@@ -75,8 +75,8 @@ body {
   position: absolute;
   inset: 0;
   background:
-    linear-gradient(105deg, rgba(7, 9, 13, 0.88) 0%, rgba(7, 9, 13, 0.35) 48%, rgba(7, 9, 13, 0.15) 100%),
-    radial-gradient(ellipse 80% 60% at 70% 40%, rgba(240, 176, 96, 0.12), transparent 55%);
+    linear-gradient(115deg, rgba(26, 36, 48, 0.72) 0%, rgba(26, 36, 48, 0.28) 46%, rgba(242, 210, 168, 0.12) 100%),
+    radial-gradient(ellipse 70% 55% at 75% 35%, rgba(255, 210, 140, 0.22), transparent 60%);
   animation: veilPulse 8s ease-in-out infinite alternate;
 }
 
@@ -120,8 +120,8 @@ body {
   font-size: clamp(3.4rem, 11vw, 6.8rem);
   line-height: 0.92;
   letter-spacing: -0.03em;
-  color: var(--champagne);
-  text-shadow: 0 18px 60px rgba(0, 0, 0, 0.45);
+  color: #fff8ee;
+  text-shadow: 0 14px 50px rgba(20, 30, 40, 0.35);
 }
 
 .landing__tagline {
@@ -189,8 +189,8 @@ body {
 }
 
 .btn--primary {
-  background: var(--champagne);
-  color: var(--ink);
+  background: #fff8ee;
+  color: #1a2430;
 }
 
 .btn--primary:hover {
@@ -234,7 +234,7 @@ body {
   justify-content: space-between;
   align-items: baseline;
   padding: 1.25rem 1.5rem;
-  background: linear-gradient(to bottom, rgba(7, 9, 13, 0.65), transparent);
+  background: linear-gradient(to bottom, rgba(26, 36, 48, 0.45), transparent);
 }
 
 .hud__brand {
@@ -311,8 +311,8 @@ body {
   gap: 0.85rem 1.25rem;
   padding: 1rem 1.25rem 1.35rem;
   font-size: 0.72rem;
-  color: rgba(210, 222, 236, 0.55);
-  background: linear-gradient(to top, rgba(7, 9, 13, 0.72), transparent);
+  color: rgba(255, 248, 238, 0.7);
+  background: linear-gradient(to top, rgba(26, 36, 48, 0.55), transparent);
   pointer-events: auto;
 }
 

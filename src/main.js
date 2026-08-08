@@ -2,7 +2,7 @@ import './style.css'
 import * as THREE from 'three'
 import { PointerLockControls } from 'three/examples/jsm/controls/PointerLockControls.js'
 import { OrbitControls } from 'three/examples/jsm/controls/OrbitControls.js'
-import { createPenthouse, ROOMS } from './world/penthouse.js'
+import { createPenthouse, ROOMS, LEVEL } from './world/penthouse.js'
 import { createCity, createSky } from './world/city.js'
 
 const canvas = document.querySelector('#scene')
@@ -24,54 +24,54 @@ renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2))
 renderer.setSize(window.innerWidth, window.innerHeight)
 renderer.outputColorSpace = THREE.SRGBColorSpace
 renderer.toneMapping = THREE.ACESFilmicToneMapping
-renderer.toneMappingExposure = 1.05
+renderer.toneMappingExposure = 1.15
 renderer.shadowMap.enabled = true
 renderer.shadowMap.type = THREE.PCFSoftShadowMap
 
 const scene = new THREE.Scene()
-scene.fog = new THREE.FogExp2(0x0a1018, 0.0045)
+scene.fog = new THREE.FogExp2(0xb8cce0, 0.0028)
 
-const camera = new THREE.PerspectiveCamera(62, window.innerWidth / window.innerHeight, 0.1, 500)
-camera.position.set(0, 1.65, 18)
+const camera = new THREE.PerspectiveCamera(62, window.innerWidth / window.innerHeight, 0.1, 550)
+camera.position.set(0, 1.65, 22)
 
 createSky(scene)
 createCity(scene)
 createPenthouse(scene)
 
-// Hemisphere + moon key light for dusk city
-const hemi = new THREE.HemisphereLight(0x9eb6d8, 0x2a1e14, 0.55)
+// Morning light: soft sky fill + warm sun from the east
+const hemi = new THREE.HemisphereLight(0xd7e8f8, 0xc4b49a, 0.85)
 scene.add(hemi)
 
-const moon = new THREE.DirectionalLight(0xc8d6ff, 0.65)
-moon.position.set(-40, 60, 20)
-moon.castShadow = true
-moon.shadow.mapSize.set(2048, 2048)
-moon.shadow.camera.near = 10
-moon.shadow.camera.far = 160
-moon.shadow.camera.left = -60
-moon.shadow.camera.right = 60
-moon.shadow.camera.top = 60
-moon.shadow.camera.bottom = -60
-scene.add(moon)
+const sun = new THREE.DirectionalLight(0xffe2b0, 1.35)
+sun.position.set(55, 48, 20)
+sun.castShadow = true
+sun.shadow.mapSize.set(2048, 2048)
+sun.shadow.camera.near = 10
+sun.shadow.camera.far = 200
+sun.shadow.camera.left = -80
+sun.shadow.camera.right = 80
+sun.shadow.camera.top = 80
+sun.shadow.camera.bottom = -80
+scene.add(sun)
 
-const sunGlow = new THREE.DirectionalLight(0xffb070, 0.35)
-sunGlow.position.set(30, 18, -50)
-scene.add(sunGlow)
+const bounce = new THREE.DirectionalLight(0xb8d0ea, 0.35)
+bounce.position.set(-40, 25, -30)
+scene.add(bounce)
 
-// Controls
 const walkControls = new PointerLockControls(camera, canvas)
 const orbitControls = new OrbitControls(camera, canvas)
 orbitControls.enableDamping = true
 orbitControls.dampingFactor = 0.06
 orbitControls.maxPolarAngle = Math.PI * 0.49
-orbitControls.minDistance = 8
-orbitControls.maxDistance = 90
-orbitControls.target.set(0, 1.5, -2)
+orbitControls.minDistance = 12
+orbitControls.maxDistance = 140
+orbitControls.target.set(0, 3, -2)
 orbitControls.enabled = false
 
-let mode = 'orbit' // 'walk' | 'orbit'
+let mode = 'orbit'
 let started = false
 let currentRoom = 0
+let eyeFloor = 0 // 0 = L1, 1 = L2
 
 const velocity = new THREE.Vector3()
 const direction = new THREE.Vector3()
@@ -79,10 +79,14 @@ const keys = { forward: false, back: false, left: false, right: false }
 const clock = new THREE.Clock()
 
 const bounds = {
-  minX: -22.5,
-  maxX: 22.5,
-  minZ: -31,
-  maxZ: 17,
+  minX: -34,
+  maxX: 34,
+  minZ: -42,
+  maxZ: 24,
+}
+
+function eyeHeight() {
+  return eyeFloor === 0 ? 1.65 : LEVEL.L2 + 1.65
 }
 
 function buildRoomNav() {
@@ -108,6 +112,7 @@ function goToRoom(index) {
   currentRoom = (index + ROOMS.length) % ROOMS.length
   const room = ROOMS[currentRoom]
   camera.position.copy(room.position)
+  eyeFloor = room.position.y > LEVEL.L2 ? 1 : 0
   if (mode === 'orbit') {
     orbitControls.target.copy(room.lookAt)
     orbitControls.update()
@@ -131,6 +136,37 @@ function nearestRoomIndex() {
     }
   })
   return best
+}
+
+/** Walk height follows stair band near x≈8, z 7..14 */
+function updateFloorFromStairs() {
+  const onStair =
+    camera.position.x > 5.5 &&
+    camera.position.x < 10.5 &&
+    camera.position.z < 15 &&
+    camera.position.z > 6.5
+
+  if (onStair) {
+    const t = THREE.MathUtils.clamp((14 - camera.position.z) / 6.2, 0, 1)
+    camera.position.y = 1.65 + t * LEVEL.L2
+    eyeFloor = t > 0.55 ? 1 : 0
+    return true
+  }
+
+  // Snap when stepping onto upper bridge near stair top
+  if (
+    eyeFloor === 0 &&
+    camera.position.y > LEVEL.L2 * 0.55 &&
+    camera.position.z < 8.5 &&
+    camera.position.x > 5 &&
+    camera.position.x < 11
+  ) {
+    eyeFloor = 1
+  }
+  if (eyeFloor === 1 && camera.position.z > 13.5 && camera.position.x > 5 && camera.position.x < 11) {
+    eyeFloor = 0
+  }
+  return false
 }
 
 function enterExperience(preferredMode) {
@@ -161,10 +197,9 @@ function setMode(next) {
     modeBtn.textContent = 'Walk'
     crosshair.classList.add('is-hidden')
     canvas.classList.remove('is-locked')
-    // Pull camera out for a cinematic orbit if too close
-    if (camera.position.y < 3) {
-      camera.position.set(22, 14, 28)
-      orbitControls.target.set(0, 1.2, -4)
+    if (camera.position.y < 4) {
+      camera.position.set(38, 22, 48)
+      orbitControls.target.set(0, 4, -4)
     }
   }
 }
@@ -175,18 +210,11 @@ modeBtn.addEventListener('click', () => {
   setMode(mode === 'walk' ? 'orbit' : 'walk')
 })
 
-landing.addEventListener('click', (e) => {
-  if (e.target.closest('button')) return
-})
-
 walkControls.addEventListener('lock', () => {
   canvas.classList.add('is-locked')
 })
 walkControls.addEventListener('unlock', () => {
   canvas.classList.remove('is-locked')
-  if (mode === 'walk' && started) {
-    // Stay in walk mode but unlocked until click
-  }
 })
 
 canvas.addEventListener('click', () => {
@@ -248,7 +276,7 @@ document.addEventListener('keyup', (e) => {
 })
 
 function updateWalk(delta) {
-  const speed = 12
+  const speed = 14
   velocity.x -= velocity.x * 8.0 * delta
   velocity.z -= velocity.z * 8.0 * delta
 
@@ -262,12 +290,16 @@ function updateWalk(delta) {
   walkControls.moveRight(-velocity.x * delta)
   walkControls.moveForward(-velocity.z * delta)
 
-  camera.position.y = 1.65
   camera.position.x = THREE.MathUtils.clamp(camera.position.x, bounds.minX, bounds.maxX)
   camera.position.z = THREE.MathUtils.clamp(camera.position.z, bounds.minZ, bounds.maxZ)
 
+  const onStairs = updateFloorFromStairs()
+  if (!onStairs) {
+    camera.position.y = eyeHeight()
+  }
+
   const near = nearestRoomIndex()
-  if (near !== currentRoom && camera.position.distanceTo(ROOMS[near].position) < 5.5) {
+  if (near !== currentRoom && camera.position.distanceTo(ROOMS[near].position) < 7) {
     currentRoom = near
     setRoomLabel(ROOMS[currentRoom].name)
     ;[...roomNav.children].forEach((el, i) => {
@@ -276,25 +308,24 @@ function updateWalk(delta) {
   }
 }
 
-// Idle cinematic before enter
-camera.position.set(26, 12, 32)
-camera.lookAt(0, 2, -4)
-orbitControls.target.set(0, 2, -4)
+camera.position.set(42, 18, 52)
+camera.lookAt(0, 4, -4)
+orbitControls.target.set(0, 4, -4)
 orbitControls.enabled = true
 mode = 'orbit'
 
-let idleAngle = 0.35
+let idleAngle = 0.4
 
 function animate() {
   requestAnimationFrame(animate)
   const delta = Math.min(clock.getDelta(), 0.05)
 
   if (!started) {
-    idleAngle += delta * 0.08
-    camera.position.x = Math.cos(idleAngle) * 34
-    camera.position.z = Math.sin(idleAngle) * 34
-    camera.position.y = 11 + Math.sin(idleAngle * 0.7) * 1.5
-    orbitControls.target.set(0, 2, -4)
+    idleAngle += delta * 0.07
+    camera.position.x = Math.cos(idleAngle) * 52
+    camera.position.z = Math.sin(idleAngle) * 52
+    camera.position.y = 16 + Math.sin(idleAngle * 0.65) * 2
+    orbitControls.target.set(0, 4, -4)
     orbitControls.update()
   } else if (mode === 'walk' && walkControls.isLocked) {
     updateWalk(delta)
