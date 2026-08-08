@@ -1,12 +1,14 @@
 /**
- * Layer 2 — Combined full-floor house (UPH A+B as one)
- * Each floor has its own full-viewport view (tabs switch floors).
+ * Layer 3 — Build kit
+ * Materials + joined wall/slab helpers; low wall preview on each floor plan.
  */
 import './style.css'
 import * as THREE from 'three'
 import { OrbitControls } from 'three/examples/jsm/controls/OrbitControls.js'
 import { createPlanDebug } from './world/plan-debug.js'
 import { PLAN_META, validateWallJoins } from './world/plan.js'
+import * as Build from './world/build.js'
+import { createMaterials } from './world/materials.js'
 
 const canvas = document.querySelector('#scene')
 
@@ -20,6 +22,7 @@ renderer.setSize(window.innerWidth, window.innerHeight)
 renderer.outputColorSpace = THREE.SRGBColorSpace
 renderer.toneMapping = THREE.ACESFilmicToneMapping
 renderer.toneMappingExposure = 1.1
+renderer.shadowMap.enabled = true
 
 const scene = new THREE.Scene()
 scene.background = new THREE.Color(0xb8cce0)
@@ -32,18 +35,19 @@ const camera = new THREE.PerspectiveCamera(
 )
 
 scene.add(new THREE.HemisphereLight(0xd7e8f8, 0xc4b49a, 0.95))
-const sun = new THREE.DirectionalLight(0xffe2b0, 1.0)
+const sun = new THREE.DirectionalLight(0xffe2b0, 1.15)
 sun.position.set(30, 50, 20)
+sun.castShadow = true
 scene.add(sun)
 
-const { root, report, sheets, titles, frame } = createPlanDebug()
+const { root, report, sheets, titles, frame, mats } = createPlanDebug()
 scene.add(root)
 
 const badge = document.querySelector('.layer-badge')
 if (badge) {
   badge.textContent = report.ok
-    ? `Layer 2 · A+B one house · joins OK`
-    : `Layer 2 · ${report.orphanCount} free ends`
+    ? `Layer 3 · Build kit · joined walls`
+    : `Layer 3 · ${report.orphanCount} free ends`
 }
 
 const meta = document.querySelector('.plan-meta')
@@ -68,7 +72,6 @@ function showFloor(which) {
   }
 }
 
-// Default: Level 1 only
 showFloor('l1')
 
 document.querySelectorAll('[data-plan]').forEach((btn) => {
@@ -92,4 +95,4 @@ window.addEventListener('resize', () => {
   renderer.setSize(window.innerWidth, window.innerHeight)
 })
 
-window.__plan = { PLAN_META, validateWallJoins, report, showFloor }
+window.__plan = { PLAN_META, validateWallJoins, report, showFloor, Build, mats, createMaterials }

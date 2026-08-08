@@ -1,6 +1,5 @@
 /**
- * Layer 2 — three separate floor-plan sheets (never overlaid):
- * Level 1 Main · Level 2 Suites · Roof terrace
+ * Layer 2/3 — floor-plan sheets + Layer 3 kit wall preview (joined extrusions).
  */
 import * as THREE from 'three'
 import {
@@ -10,17 +9,14 @@ import {
   WATER,
   validateWallJoins,
 } from './plan.js'
+import { createMaterials } from './materials.js'
+import { buildWallsWithOpenings, createSlab } from './build.js'
 
-const KIND_COLOR = {
-  exterior: 0x1a2430,
-  glass: 0x3a7ca5,
-  interior: 0xb8925a,
-  railing: 0x6a7a88,
-}
+/** Preview wall height — full storey comes in later layers */
+const PREVIEW_H = 0.55
 
 export const SHEET_GAP = 0
 
-/** All sheets share the same origin — only one visible at a time. */
 function sheetOffsetX(_level) {
   return 0
 }
@@ -61,7 +57,7 @@ function makeRoomLabel(room, y, tone = 'l1') {
   const span = Math.min(w, d, 6)
   const scale = Math.max(2.4, Math.min(span * 0.9, 6))
   sprite.scale.set(scale, scale * (160 / 512), 1)
-  sprite.position.set((room.x0 + room.x1) / 2, y, (room.z0 + room.z1) / 2)
+  sprite.position.set((room.x0 + room.x1) / 2, PREVIEW_H + 0.2, (room.z0 + room.z1) / 2)
   sprite.renderOrder = 10
   return sprite
 }
@@ -92,38 +88,23 @@ function makeTitle(text, sub, x, z) {
   return sprite
 }
 
-function addPlate(parent, color, z0 = PLAN_META.envelope.z0, z1 = PLAN_META.envelope.z1) {
+function addPlate(parent, mats, z0 = PLAN_META.envelope.z0, z1 = PLAN_META.envelope.z1) {
   const env = PLAN_META.envelope
-  const plate = new THREE.Mesh(
-    new THREE.PlaneGeometry(env.x1 - env.x0, z1 - z0),
-    new THREE.MeshBasicMaterial({
-      color,
-      transparent: true,
-      opacity: 0.55,
-      side: THREE.DoubleSide,
-    }),
-  )
-  plate.rotation.x = -Math.PI / 2
-  plate.position.set((env.x0 + env.x1) / 2, 0.001, (z0 + z1) / 2)
-  parent.add(plate)
+  const slab = createSlab(env.x0, z0, env.x1, z1, 0, 0.08, mats.slab)
+  if (slab) {
+    slab.receiveShadow = true
+    parent.add(slab)
+  }
 }
 
-function addWalls(parent, walls, y = 0.05) {
-  const byKind = new Map()
-  for (const wall of walls) {
-    if (!byKind.has(wall.kind)) byKind.set(wall.kind, [])
-    byKind.get(wall.kind).push(wall.ax, y, wall.az, wall.bx, y, wall.bz)
-  }
-  for (const [kind, positions] of byKind) {
-    const geo = new THREE.BufferGeometry()
-    geo.setAttribute('position', new THREE.Float32BufferAttribute(positions, 3))
-    parent.add(
-      new THREE.LineSegments(
-        geo,
-        new THREE.LineBasicMaterial({ color: KIND_COLOR[kind] ?? 0xffffff }),
-      ),
-    )
-  }
+function addKitWalls(parent, walls, mats) {
+  const group = buildWallsWithOpenings(walls, PREVIEW_H, (seg) => {
+    if (seg.kind === 'glass') return mats.glass
+    if (seg.kind === 'railing') return mats.railing
+    if (seg.kind === 'exterior') return mats.wallExt
+    return mats.wall
+  })
+  parent.add(group)
 }
 
 function addJoinDots(parent, walls, report) {
@@ -142,7 +123,7 @@ function addJoinDots(parent, walls, report) {
         new THREE.SphereGeometry(orphan ? 0.12 : 0.07, 8, 8),
         new THREE.MeshBasicMaterial({ color: orphan ? 0xc47a3a : 0x3d6b4f }),
       )
-      dot.position.set(x, 0.08, z)
+      dot.position.set(x, PREVIEW_H + 0.05, z)
       parent.add(dot)
     }
   }
@@ -166,7 +147,7 @@ function addRooms(parent, level, tone) {
       mesh.rotation.x = -Math.PI / 2
       mesh.position.set((room.x0 + room.x1) / 2, 0.002, (room.z0 + room.z1) / 2)
       parent.add(mesh)
-    } else if (room.id !== 'rooftop' && room.id !== 'terrace-n' && room.id !== 'terrace2-n') {
+    } else if (!['rooftop', 'terrace', 'terrace2', 'sundeck', 'summer'].includes(room.id)) {
       const mesh = new THREE.Mesh(
         new THREE.PlaneGeometry(w, d),
         new THREE.MeshBasicMaterial({
@@ -184,29 +165,23 @@ function addRooms(parent, level, tone) {
   }
 }
 
-function buildSheet(level, title, sub, tone, plateColor, report) {
+function buildSheet(level, title, sub, tone, mats, report) {
   const sheet = new THREE.Group()
   sheet.name = `plan-l${level}`
   sheet.position.x = sheetOffsetX(level)
 
   const env = PLAN_META.envelope
   if (level === 3) {
-    addPlate(sheet, plateColor, -13, 13)
+    addPlate(sheet, mats, -12, 12)
   } else {
-    addPlate(sheet, plateColor)
+    addPlate(sheet, mats)
     const t = PLAN_META.terrace
-    const terrace = new THREE.Mesh(
-      new THREE.PlaneGeometry(t.x1 - t.x0, t.z1 - t.z0),
-      new THREE.MeshBasicMaterial({
-        color: 0xc5d0b8,
-        transparent: true,
-        opacity: 0.5,
-        side: THREE.DoubleSide,
-      }),
-    )
-    terrace.rotation.x = -Math.PI / 2
-    terrace.position.set((t.x0 + t.x1) / 2, 0.0015, (t.z0 + t.z1) / 2)
-    sheet.add(terrace)
+    const terrace = createSlab(t.x0, t.z0, t.x1, t.z1, 0, 0.06, mats.slab)
+    if (terrace) {
+      terrace.material = mats.slab.clone()
+      terrace.material.color = new THREE.Color(0xc5d0b8)
+      sheet.add(terrace)
+    }
   }
 
   addRooms(sheet, level, tone)
@@ -223,7 +198,7 @@ function buildSheet(level, title, sub, tone, plateColor, report) {
         }),
       )
       mesh.rotation.x = -Math.PI / 2
-      mesh.position.set((rect.x0 + rect.x1) / 2, 0.01, (rect.z0 + rect.z1) / 2)
+      mesh.position.set((rect.x0 + rect.x1) / 2, 0.05, (rect.z0 + rect.z1) / 2)
       sheet.add(mesh)
       sheet.add(
         makeRoomLabel(
@@ -234,7 +209,7 @@ function buildSheet(level, title, sub, tone, plateColor, report) {
             z0: rect.z0,
             z1: rect.z1,
           },
-          0.08,
+          PREVIEW_H + 0.15,
           'l3',
         ),
       )
@@ -242,7 +217,7 @@ function buildSheet(level, title, sub, tone, plateColor, report) {
   }
 
   const walls = ALL_WALLS.filter((w) => w.level === level)
-  addWalls(sheet, walls)
+  addKitWalls(sheet, walls, mats)
   addJoinDots(sheet, walls, report)
 
   sheet.add(makeTitle(title, sub, (env.x0 + env.x1) / 2, env.z1 + 4))
@@ -253,6 +228,7 @@ export function createPlanDebug() {
   const root = new THREE.Group()
   root.name = 'plan-debug'
   const report = validateWallJoins()
+  const mats = createMaterials()
   console.info('[plan] wall join check', report)
 
   const l1 = buildSheet(
@@ -260,7 +236,7 @@ export function createPlanDebug() {
     'Level 1 — Live',
     'Foyer · great room · kitchen · office · terrace',
     'l1',
-    0xd8d2c6,
+    mats,
     report,
   )
   const l2 = buildSheet(
@@ -268,7 +244,7 @@ export function createPlanDebug() {
     'Level 2 — Sleep',
     'Primary suite · 2 guests · media',
     'l2',
-    0xd2d8cc,
+    mats,
     report,
   )
   const l3 = buildSheet(
@@ -276,13 +252,12 @@ export function createPlanDebug() {
     'Roof — Outdoors',
     'Pool · spa · summer kitchen · sundeck',
     'l3',
-    0xcbd5c8,
+    mats,
     report,
   )
 
   root.add(l1, l2, l3)
 
-  // One floor per view — hide L2/L3 until selected
   l1.visible = true
   l2.visible = false
   l3.visible = false
@@ -292,6 +267,7 @@ export function createPlanDebug() {
   return {
     root,
     report,
+    mats,
     sheets: { l1, l2, l3 },
     titles: {
       l1: 'Level 1 — Live (open great room)',
@@ -300,7 +276,7 @@ export function createPlanDebug() {
     },
     frame: {
       target: { x: 0, y: 0, z: (env.z0 + env.z1) / 2 },
-      position: { x: 0, y: 52, z: 34 },
+      position: { x: 0, y: 48, z: 32 },
     },
   }
 }
