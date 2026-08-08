@@ -79,14 +79,14 @@ const keys = { forward: false, back: false, left: false, right: false }
 const clock = new THREE.Clock()
 
 const bounds = {
-  minX: -62,
-  maxX: 62,
-  minZ: -86,
-  maxZ: 50,
+  minX: -46,
+  maxX: 46,
+  minZ: -58,
+  maxZ: 30,
 }
 
 function eyeHeight() {
-  return eyeFloor === 0 ? 1.7 : LEVEL.L2 + 1.7
+  return eyeFloor === 0 ? 1.65 : LEVEL.L2 + 1.65
 }
 
 function buildRoomNav() {
@@ -138,17 +138,17 @@ function nearestRoomIndex() {
   return best
 }
 
-/** Walk height follows stair band near x≈14, z 14..26 */
+/** Walk height follows stair band near x≈10, z 10..18 */
 function updateFloorFromStairs() {
   const onStair =
-    camera.position.x > 11.5 &&
-    camera.position.x < 16.5 &&
-    camera.position.z < 27 &&
-    camera.position.z > 13.5
+    camera.position.x > 8 &&
+    camera.position.x < 12 &&
+    camera.position.z < 19 &&
+    camera.position.z > 10
 
   if (onStair) {
-    const t = THREE.MathUtils.clamp((26 - camera.position.z) / 8.0, 0, 1)
-    camera.position.y = 1.7 + t * LEVEL.L2
+    const t = THREE.MathUtils.clamp((18 - camera.position.z) / 6.5, 0, 1)
+    camera.position.y = 1.65 + t * LEVEL.L2
     eyeFloor = t > 0.55 ? 1 : 0
     return true
   }
@@ -156,13 +156,13 @@ function updateFloorFromStairs() {
   if (
     eyeFloor === 0 &&
     camera.position.y > LEVEL.L2 * 0.55 &&
-    camera.position.z < 15 &&
-    camera.position.x > 11 &&
-    camera.position.x < 17
+    camera.position.z < 12 &&
+    camera.position.x > 8 &&
+    camera.position.x < 12
   ) {
     eyeFloor = 1
   }
-  if (eyeFloor === 1 && camera.position.z > 25 && camera.position.x > 11 && camera.position.x < 17) {
+  if (eyeFloor === 1 && camera.position.z > 17 && camera.position.x > 8 && camera.position.x < 12) {
     eyeFloor = 0
   }
   return false

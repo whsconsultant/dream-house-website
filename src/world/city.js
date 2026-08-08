@@ -34,14 +34,14 @@ export function createCity(scene) {
 
   // Our tower shaft — top meets penthouse slab at y ≈ 0
   const plinth = new THREE.Mesh(
-    new THREE.BoxGeometry(134, towerHeight, 110),
+    new THREE.BoxGeometry(100, towerHeight, 95),
     new THREE.MeshStandardMaterial({ color: 0xd8d2c8, roughness: 0.85, metalness: 0.08 }),
   )
-  plinth.position.set(0, groundY + towerHeight / 2, 0)
+  plinth.position.set(0, groundY + towerHeight / 2, -8)
   city.add(plinth)
 
   const shaftGlass = new THREE.Mesh(
-    new THREE.BoxGeometry(132, towerHeight - 2, 108),
+    new THREE.BoxGeometry(98, towerHeight - 2, 93),
     new THREE.MeshStandardMaterial({
       color: 0x9eb8cc,
       roughness: 0.25,
@@ -50,14 +50,14 @@ export function createCity(scene) {
       opacity: 0.5,
     }),
   )
-  shaftGlass.position.set(0, groundY + towerHeight / 2, 0)
+  shaftGlass.position.set(0, groundY + towerHeight / 2, -8)
   city.add(shaftGlass)
 
   const crown = new THREE.Mesh(
-    new THREE.BoxGeometry(136, 2.4, 112),
+    new THREE.BoxGeometry(102, 2.4, 97),
     new THREE.MeshStandardMaterial({ color: 0xb8925a, roughness: 0.4, metalness: 0.55 }),
   )
-  crown.position.set(0, -1.1, 0)
+  crown.position.set(0, -1.1, -8)
   city.add(crown)
 
   const facadeMat = new THREE.MeshStandardMaterial({ color: 0xc4cdd6, roughness: 0.7, metalness: 0.15 })
