@@ -79,10 +79,10 @@ renderer.shadowMap.enabled = true
 renderer.shadowMap.type = THREE.PCFSoftShadowMap
 
 const scene = new THREE.Scene()
-scene.fog = new THREE.FogExp2(0xb8cce0, 0.0018)
+scene.fog = new THREE.FogExp2(0xb8cce0, 0.0035)
 
-const camera = new THREE.PerspectiveCamera(62, window.innerWidth / window.innerHeight, 0.1, 900)
-camera.position.set(0, 1.65, 22)
+const camera = new THREE.PerspectiveCamera(60, window.innerWidth / window.innerHeight, 0.1, 500)
+camera.position.set(0, 1.55, 10)
 
 createSky(scene)
 createCity(scene)
@@ -96,12 +96,12 @@ const sun = new THREE.DirectionalLight(0xffe2b0, 1.35)
 sun.position.set(55, 48, 20)
 sun.castShadow = true
 sun.shadow.mapSize.set(2048, 2048)
-sun.shadow.camera.near = 10
-sun.shadow.camera.far = 280
-sun.shadow.camera.left = -110
-sun.shadow.camera.right = 110
-sun.shadow.camera.top = 110
-sun.shadow.camera.bottom = -110
+sun.shadow.camera.near = 5
+sun.shadow.camera.far = 200
+sun.shadow.camera.left = -40
+sun.shadow.camera.right = 40
+sun.shadow.camera.top = 40
+sun.shadow.camera.bottom = -40
 scene.add(sun)
 
 const bounce = new THREE.DirectionalLight(0xb8d0ea, 0.35)
@@ -113,9 +113,9 @@ const orbitControls = new OrbitControls(camera, canvas)
 orbitControls.enableDamping = true
 orbitControls.dampingFactor = 0.06
 orbitControls.maxPolarAngle = Math.PI * 0.49
-orbitControls.minDistance = 18
-orbitControls.maxDistance = 280
-orbitControls.target.set(0, 5, -4)
+orbitControls.minDistance = 8
+orbitControls.maxDistance = 80
+orbitControls.target.set(0, 2, -2)
 orbitControls.enabled = false
 
 let mode = 'orbit'
@@ -129,14 +129,14 @@ const keys = { forward: false, back: false, left: false, right: false }
 const clock = new THREE.Clock()
 
 const bounds = {
-  minX: -46,
-  maxX: 46,
-  minZ: -58,
-  maxZ: 30,
+  minX: -14.5,
+  maxX: 14.5,
+  minZ: -13.5,
+  maxZ: 11.5,
 }
 
 function eyeHeight() {
-  return eyeFloor === 0 ? 1.65 : LEVEL.L2 + 1.65
+  return eyeFloor === 0 ? 1.55 : LEVEL.L2 + 1.55
 }
 
 function buildRoomNav() {
@@ -188,31 +188,25 @@ function nearestRoomIndex() {
   return best
 }
 
-/** Walk height follows stair band near x≈10, z 10..18 */
+/** Stair band near x≈8, z 5..9 */
 function updateFloorFromStairs() {
   const onStair =
-    camera.position.x > 8 &&
-    camera.position.x < 12 &&
-    camera.position.z < 19 &&
-    camera.position.z > 10
+    camera.position.x > 6.5 &&
+    camera.position.x < 9.5 &&
+    camera.position.z < 9.5 &&
+    camera.position.z > 4.5
 
   if (onStair) {
-    const t = THREE.MathUtils.clamp((18 - camera.position.z) / 6.5, 0, 1)
-    camera.position.y = 1.65 + t * LEVEL.L2
+    const t = THREE.MathUtils.clamp((9.2 - camera.position.z) / 4.0, 0, 1)
+    camera.position.y = 1.55 + t * LEVEL.L2
     eyeFloor = t > 0.55 ? 1 : 0
     return true
   }
 
-  if (
-    eyeFloor === 0 &&
-    camera.position.y > LEVEL.L2 * 0.55 &&
-    camera.position.z < 12 &&
-    camera.position.x > 8 &&
-    camera.position.x < 12
-  ) {
-    eyeFloor = 1
+  if (eyeFloor === 0 && camera.position.y > LEVEL.L2 * 0.5 && camera.position.z < 5.5) {
+    if (camera.position.x > 6.5 && camera.position.x < 9.5) eyeFloor = 1
   }
-  if (eyeFloor === 1 && camera.position.z > 17 && camera.position.x > 8 && camera.position.x < 12) {
+  if (eyeFloor === 1 && camera.position.z > 8.5 && camera.position.x > 6.5 && camera.position.x < 9.5) {
     eyeFloor = 0
   }
   return false
@@ -246,9 +240,9 @@ function setMode(next) {
     modeBtn.textContent = 'Walk'
     crosshair.classList.add('is-hidden')
     canvas.classList.remove('is-locked')
-    if (camera.position.y < 4) {
-      camera.position.set(75, 36, 95)
-      orbitControls.target.set(0, 6, -10)
+    if (camera.position.y < 3) {
+      camera.position.set(18, 10, 22)
+      orbitControls.target.set(0, 2.5, -2)
     }
   }
 }
@@ -325,7 +319,7 @@ document.addEventListener('keyup', (e) => {
 })
 
 function updateWalk(delta) {
-  const speed = 14
+  const speed = 8
   velocity.x -= velocity.x * 8.0 * delta
   velocity.z -= velocity.z * 8.0 * delta
 
@@ -348,7 +342,7 @@ function updateWalk(delta) {
   }
 
   const near = nearestRoomIndex()
-  if (near !== currentRoom && camera.position.distanceTo(ROOMS[near].position) < 7) {
+  if (near !== currentRoom && camera.position.distanceTo(ROOMS[near].position) < 3.5) {
     currentRoom = near
     setRoomLabel(ROOMS[currentRoom].name)
     ;[...roomNav.children].forEach((el, i) => {
@@ -357,24 +351,24 @@ function updateWalk(delta) {
   }
 }
 
-camera.position.set(80, 32, 100)
-camera.lookAt(0, 6, -10)
-orbitControls.target.set(0, 6, -10)
+camera.position.set(20, 12, 24)
+camera.lookAt(0, 2.5, -2)
+orbitControls.target.set(0, 2.5, -2)
 orbitControls.enabled = true
 mode = 'orbit'
 
-let idleAngle = 0.35
+let idleAngle = 0.5
 
 function animate() {
   requestAnimationFrame(animate)
   const delta = Math.min(clock.getDelta(), 0.05)
 
   if (!started) {
-    idleAngle += delta * 0.05
-    camera.position.x = Math.cos(idleAngle) * 105
-    camera.position.z = Math.sin(idleAngle) * 105
-    camera.position.y = 30 + Math.sin(idleAngle * 0.65) * 4
-    orbitControls.target.set(0, 6, -10)
+    idleAngle += delta * 0.08
+    camera.position.x = Math.cos(idleAngle) * 22
+    camera.position.z = Math.sin(idleAngle) * 22
+    camera.position.y = 9 + Math.sin(idleAngle * 0.7) * 1.5
+    orbitControls.target.set(0, 2.5, -2)
     orbitControls.update()
   } else if (mode === 'walk' && walkControls.isLocked) {
     updateWalk(delta)
