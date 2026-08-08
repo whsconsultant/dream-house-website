@@ -1,98 +1,114 @@
 import * as THREE from 'three'
 
-/** Morning city skyline around the tower. */
+/** City sits far below so the penthouse crowns the tallest tower. */
+export const CITY = {
+  groundY: -160,
+  towerHeight: 160, // shaft from street to penthouse slab
+}
+
+/** Morning skyline — every neighbor peaks below the penthouse floor (y = 0). */
 export function createCity(scene) {
   const city = new THREE.Group()
   city.name = 'city'
   scene.add(city)
 
+  const { groundY, towerHeight } = CITY
+  const maxNeighbor = towerHeight - 28 // always shorter than our crown
+
   const ground = new THREE.Mesh(
-    new THREE.CircleGeometry(280, 64),
-    new THREE.MeshStandardMaterial({ color: 0x8a9a88, roughness: 0.95, metalness: 0.02 }),
+    new THREE.CircleGeometry(420, 64),
+    new THREE.MeshStandardMaterial({ color: 0x7f9178, roughness: 0.95, metalness: 0.02 }),
   )
   ground.rotation.x = -Math.PI / 2
-  ground.position.y = -0.45
+  ground.position.y = groundY
   ground.receiveShadow = true
   city.add(ground)
 
-  // Soft parks / water suggestion
   const park = new THREE.Mesh(
-    new THREE.CircleGeometry(40, 32),
-    new THREE.MeshStandardMaterial({ color: 0x6f8f6a, roughness: 0.92 }),
+    new THREE.CircleGeometry(55, 32),
+    new THREE.MeshStandardMaterial({ color: 0x5f8258, roughness: 0.92 }),
   )
   park.rotation.x = -Math.PI / 2
-  park.position.set(70, -0.42, 40)
+  park.position.set(90, groundY + 0.05, 55)
   city.add(park)
 
+  // Our tower shaft — top meets penthouse slab at y ≈ 0
   const plinth = new THREE.Mesh(
-    new THREE.BoxGeometry(74, 48, 52),
+    new THREE.BoxGeometry(100, towerHeight, 72),
     new THREE.MeshStandardMaterial({ color: 0xd8d2c8, roughness: 0.85, metalness: 0.08 }),
   )
-  plinth.position.set(0, -24.2, 0)
+  plinth.position.set(0, groundY + towerHeight / 2, 0)
   city.add(plinth)
 
-  // Glass curtain on tower shaft
   const shaftGlass = new THREE.Mesh(
-    new THREE.BoxGeometry(72, 46, 50),
+    new THREE.BoxGeometry(98, towerHeight - 2, 70),
     new THREE.MeshStandardMaterial({
       color: 0x9eb8cc,
       roughness: 0.25,
       metalness: 0.35,
       transparent: true,
-      opacity: 0.55,
+      opacity: 0.5,
     }),
   )
-  shaftGlass.position.set(0, -24, 0)
+  shaftGlass.position.set(0, groundY + towerHeight / 2, 0)
   city.add(shaftGlass)
+
+  // Crown ring just under the slab
+  const crown = new THREE.Mesh(
+    new THREE.BoxGeometry(102, 2.2, 74),
+    new THREE.MeshStandardMaterial({ color: 0xb8925a, roughness: 0.4, metalness: 0.55 }),
+  )
+  crown.position.set(0, -1.0, 0)
+  city.add(crown)
 
   const facadeMat = new THREE.MeshStandardMaterial({ color: 0xc4cdd6, roughness: 0.7, metalness: 0.15 })
   const windowMat = new THREE.MeshStandardMaterial({
     color: 0x7a94a8,
     emissive: 0xffe0b0,
-    emissiveIntensity: 0.08,
+    emissiveIntensity: 0.06,
     roughness: 0.35,
     metalness: 0.2,
   })
 
   const rng = mulberry32(47)
-  for (let i = 0; i < 70; i++) {
+  for (let i = 0; i < 85; i++) {
     const angle = rng() * Math.PI * 2
-    const dist = 70 + rng() * 170
+    const dist = 85 + rng() * 220
     const x = Math.cos(angle) * dist
     const z = Math.sin(angle) * dist
-    if (Math.hypot(x, z) < 60) continue
+    if (Math.hypot(x, z) < 75) continue
 
-    const w = 5 + rng() * 12
-    const d = 5 + rng() * 12
-    const h = 20 + rng() * 85
+    const w = 6 + rng() * 14
+    const d = 6 + rng() * 14
+    const h = 35 + rng() * (maxNeighbor - 35)
     const tower = new THREE.Mesh(new THREE.BoxGeometry(w, h, d), facadeMat)
-    tower.position.set(x, h / 2 - 0.45, z)
+    tower.position.set(x, groundY + h / 2, z)
     city.add(tower)
 
     const lit = new THREE.Mesh(new THREE.BoxGeometry(w * 0.9, h * 0.88, d * 0.9), windowMat.clone())
-    lit.material.emissiveIntensity = 0.04 + rng() * 0.12
+    lit.material.emissiveIntensity = 0.03 + rng() * 0.1
     lit.position.copy(tower.position)
     city.add(lit)
   }
 
   const haze = new THREE.Mesh(
-    new THREE.RingGeometry(90, 240, 64),
+    new THREE.RingGeometry(100, 320, 64),
     new THREE.MeshBasicMaterial({
       color: 0xc8d6e4,
       transparent: true,
-      opacity: 0.28,
+      opacity: 0.3,
       side: THREE.DoubleSide,
     }),
   )
   haze.rotation.x = -Math.PI / 2
-  haze.position.y = 1.2
+  haze.position.y = groundY + 8
   city.add(haze)
 
   return city
 }
 
 export function createSky(scene) {
-  const skyGeo = new THREE.SphereGeometry(420, 32, 16)
+  const skyGeo = new THREE.SphereGeometry(520, 32, 16)
   const skyMat = new THREE.ShaderMaterial({
     side: THREE.BackSide,
     uniforms: {

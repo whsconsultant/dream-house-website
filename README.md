@@ -1,6 +1,6 @@
 # Dream House — Full-Floor Penthouse
 
-Interactive WebGL walkthrough of a **~28,000 sq ft duplex** penthouse in morning light: double-height great room, dining, chef kitchen, cinema, library, guest wing, spa, pool terrace, plus upper-level master suite, sky gym, sky lounge, and morning deck.
+Interactive WebGL walkthrough of a **~40,000 sq ft crown duplex** in morning light — the tallest tower in the skyline — with an indoor lap pool, outdoor infinity pool, double-height great room, and a full private upper level.
 
 ## Run locally
 

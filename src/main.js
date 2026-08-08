@@ -29,9 +29,9 @@ renderer.shadowMap.enabled = true
 renderer.shadowMap.type = THREE.PCFSoftShadowMap
 
 const scene = new THREE.Scene()
-scene.fog = new THREE.FogExp2(0xb8cce0, 0.0028)
+scene.fog = new THREE.FogExp2(0xb8cce0, 0.0018)
 
-const camera = new THREE.PerspectiveCamera(62, window.innerWidth / window.innerHeight, 0.1, 550)
+const camera = new THREE.PerspectiveCamera(62, window.innerWidth / window.innerHeight, 0.1, 700)
 camera.position.set(0, 1.65, 22)
 
 createSky(scene)
@@ -47,11 +47,11 @@ sun.position.set(55, 48, 20)
 sun.castShadow = true
 sun.shadow.mapSize.set(2048, 2048)
 sun.shadow.camera.near = 10
-sun.shadow.camera.far = 200
-sun.shadow.camera.left = -80
-sun.shadow.camera.right = 80
-sun.shadow.camera.top = 80
-sun.shadow.camera.bottom = -80
+sun.shadow.camera.far = 280
+sun.shadow.camera.left = -110
+sun.shadow.camera.right = 110
+sun.shadow.camera.top = 110
+sun.shadow.camera.bottom = -110
 scene.add(sun)
 
 const bounce = new THREE.DirectionalLight(0xb8d0ea, 0.35)
@@ -63,9 +63,9 @@ const orbitControls = new OrbitControls(camera, canvas)
 orbitControls.enableDamping = true
 orbitControls.dampingFactor = 0.06
 orbitControls.maxPolarAngle = Math.PI * 0.49
-orbitControls.minDistance = 12
-orbitControls.maxDistance = 140
-orbitControls.target.set(0, 3, -2)
+orbitControls.minDistance = 14
+orbitControls.maxDistance = 220
+orbitControls.target.set(0, 4, -2)
 orbitControls.enabled = false
 
 let mode = 'orbit'
@@ -79,10 +79,10 @@ const keys = { forward: false, back: false, left: false, right: false }
 const clock = new THREE.Clock()
 
 const bounds = {
-  minX: -34,
-  maxX: 34,
-  minZ: -42,
-  maxZ: 24,
+  minX: -46,
+  maxX: 46,
+  minZ: -56,
+  maxZ: 32,
 }
 
 function eyeHeight() {
@@ -138,32 +138,31 @@ function nearestRoomIndex() {
   return best
 }
 
-/** Walk height follows stair band near x≈8, z 7..14 */
+/** Walk height follows stair band near x≈10, z 9..18 */
 function updateFloorFromStairs() {
   const onStair =
-    camera.position.x > 5.5 &&
-    camera.position.x < 10.5 &&
-    camera.position.z < 15 &&
-    camera.position.z > 6.5
+    camera.position.x > 7.5 &&
+    camera.position.x < 12.5 &&
+    camera.position.z < 19 &&
+    camera.position.z > 8.5
 
   if (onStair) {
-    const t = THREE.MathUtils.clamp((14 - camera.position.z) / 6.2, 0, 1)
+    const t = THREE.MathUtils.clamp((18 - camera.position.z) / 7.2, 0, 1)
     camera.position.y = 1.65 + t * LEVEL.L2
     eyeFloor = t > 0.55 ? 1 : 0
     return true
   }
 
-  // Snap when stepping onto upper bridge near stair top
   if (
     eyeFloor === 0 &&
     camera.position.y > LEVEL.L2 * 0.55 &&
-    camera.position.z < 8.5 &&
-    camera.position.x > 5 &&
-    camera.position.x < 11
+    camera.position.z < 10.5 &&
+    camera.position.x > 7 &&
+    camera.position.x < 13
   ) {
     eyeFloor = 1
   }
-  if (eyeFloor === 1 && camera.position.z > 13.5 && camera.position.x > 5 && camera.position.x < 11) {
+  if (eyeFloor === 1 && camera.position.z > 17.5 && camera.position.x > 7 && camera.position.x < 13) {
     eyeFloor = 0
   }
   return false
@@ -198,8 +197,8 @@ function setMode(next) {
     crosshair.classList.add('is-hidden')
     canvas.classList.remove('is-locked')
     if (camera.position.y < 4) {
-      camera.position.set(38, 22, 48)
-      orbitControls.target.set(0, 4, -4)
+      camera.position.set(55, 28, 70)
+      orbitControls.target.set(0, 5, -6)
     }
   }
 }
@@ -308,9 +307,9 @@ function updateWalk(delta) {
   }
 }
 
-camera.position.set(42, 18, 52)
-camera.lookAt(0, 4, -4)
-orbitControls.target.set(0, 4, -4)
+camera.position.set(58, 24, 72)
+camera.lookAt(0, 5, -6)
+orbitControls.target.set(0, 5, -6)
 orbitControls.enabled = true
 mode = 'orbit'
 
@@ -321,11 +320,11 @@ function animate() {
   const delta = Math.min(clock.getDelta(), 0.05)
 
   if (!started) {
-    idleAngle += delta * 0.07
-    camera.position.x = Math.cos(idleAngle) * 52
-    camera.position.z = Math.sin(idleAngle) * 52
-    camera.position.y = 16 + Math.sin(idleAngle * 0.65) * 2
-    orbitControls.target.set(0, 4, -4)
+    idleAngle += delta * 0.06
+    camera.position.x = Math.cos(idleAngle) * 75
+    camera.position.z = Math.sin(idleAngle) * 75
+    camera.position.y = 22 + Math.sin(idleAngle * 0.65) * 3
+    orbitControls.target.set(0, 5, -6)
     orbitControls.update()
   } else if (mode === 'walk' && walkControls.isLocked) {
     updateWalk(delta)
