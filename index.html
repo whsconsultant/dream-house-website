@@ -4,72 +4,19 @@
     <meta charset="UTF-8" />
     <link rel="icon" type="image/svg+xml" href="./favicon.svg" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <meta
-      name="description"
-      content="Dream House crown duplex — architectural floor plan and 3D walkthrough with indoor pool and open-sky terrace infinity pool."
-    />
-    <title>Dream House — Floor Plan & Penthouse</title>
+    <meta name="description" content="Dream House — duplex penthouse, built layer by layer." />
+    <title>Dream House</title>
     <link rel="preconnect" href="https://fonts.googleapis.com" />
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
     <link
-      href="https://fonts.googleapis.com/css2?family=DM+Sans:ital,opsz,wght@0,9..40,400;0,9..40,500;0,9..40,600;1,9..40,400&family=Fraunces:opsz,wght@9..144,500;9..144,600;9..144,700&display=swap"
+      href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600&family=Fraunces:opsz,wght@9..144,600&display=swap"
       rel="stylesheet"
     />
   </head>
   <body>
     <div id="app">
       <canvas id="scene"></canvas>
-
-      <div id="landing" class="landing">
-        <div class="landing__veil"></div>
-        <div class="landing__content">
-          <p class="landing__meta">Residence · Duplex Penthouse · Sales Plan</p>
-          <h1 class="landing__brand">Dream House</h1>
-          <p class="landing__tagline">
-            A duplex penthouse rebuilt to match real residences — open living to
-            glass and terrace, detailed kitchen and suites, rooftop infinity pool
-            and spa above the city.
-          </p>
-          <div class="landing__actions">
-            <button type="button" id="plan-btn" class="btn btn--primary">
-              View floor plan
-            </button>
-            <button type="button" id="enter-btn" class="btn btn--ghost">
-              Enter 3D
-            </button>
-            <button type="button" id="orbit-btn" class="btn btn--ghost">
-              Orbit view
-            </button>
-          </div>
-        </div>
-      </div>
-
-      <div id="plan-panel" class="plan-panel is-hidden" aria-hidden="true">
-        <button type="button" id="plan-close" class="plan-panel__close" aria-label="Close floor plan">
-          Close
-        </button>
-        <div id="plan-root" class="plan-panel__body"></div>
-      </div>
-
-      <div id="hud" class="hud is-hidden" aria-hidden="true">
-        <header class="hud__top">
-          <div class="hud__brand">Dream House</div>
-          <div id="room-label" class="hud__room">Foyer</div>
-          <button type="button" id="hud-plan-btn" class="btn btn--tiny">Plan</button>
-        </header>
-
-        <nav class="hud__rooms" id="room-nav" aria-label="Rooms"></nav>
-
-        <footer class="hud__controls">
-          <span><kbd>W</kbd><kbd>A</kbd><kbd>S</kbd><kbd>D</kbd> move</span>
-          <span><kbd>Mouse</kbd> look</span>
-          <span><kbd>E</kbd> next room</span>
-          <span><kbd>P</kbd> plan</span>
-          <button type="button" id="mode-btn" class="btn btn--tiny">Orbit</button>
-        </footer>
-      </div>
-
-      <div id="crosshair" class="crosshair is-hidden" aria-hidden="true"></div>
+      <div class="layer-badge">Layer 1 · Shell</div>
     </div>
     <script type="module" src="/src/main.js"></script>
   </body>
