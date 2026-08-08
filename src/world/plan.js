@@ -328,6 +328,7 @@ export const L2_INTERIOR_WALLS = [
   }),
   W('l2-x16e', 16, 11, 16, 12, { level: 2 }),
   W('l2-med-n', 11, 11, 16, 11, { level: 2 }),
+  W('l2-med-tie', 11, 10, 11, 11, { level: 2 }),
 
   // Stair
   W('l2-st-w', 6, 4, 6, 10, { level: 2 }),
