@@ -1,6 +1,6 @@
 /**
- * Layer 2 — two separate floor-plan sheets (L1 + L2), never overlaid.
- * Laid out side-by-side like a sales brochure.
+ * Layer 2 — three separate floor-plan sheets (never overlaid):
+ * Level 1 Main · Level 2 Suites · Roof terrace
  */
 import * as THREE from 'three'
 import {
@@ -18,17 +18,13 @@ const KIND_COLOR = {
   railing: 0x6a7a88,
 }
 
-/** Gap between the two plan sheets (meters) */
-export const SHEET_GAP = 8
+export const SHEET_GAP = 10
 
 function sheetOffsetX(level) {
-  const env = PLAN_META.envelope
-  const plateW = env.x1 - env.x0
-  if (level === 1) return 0
-  return plateW + SHEET_GAP
+  const plateW = PLAN_META.envelope.x1 - PLAN_META.envelope.x0
+  return (level - 1) * (plateW + SHEET_GAP)
 }
 
-/** Flat plan label: name + W×D m + area */
 function makeRoomLabel(room, y, tone = 'l1') {
   const w = room.x1 - room.x0
   const d = room.z1 - room.z0
@@ -38,16 +34,22 @@ function makeRoomLabel(room, y, tone = 'l1') {
   canvas.height = 160
   const ctx = canvas.getContext('2d')
   ctx.clearRect(0, 0, canvas.width, canvas.height)
-  ctx.fillStyle = tone === 'l2' ? 'rgba(45, 70, 50, 0.82)' : 'rgba(26, 36, 48, 0.78)'
+  const fill =
+    tone === 'l3'
+      ? 'rgba(40, 70, 90, 0.85)'
+      : tone === 'l2'
+        ? 'rgba(45, 70, 50, 0.82)'
+        : 'rgba(26, 36, 48, 0.78)'
+  ctx.fillStyle = fill
   ctx.beginPath()
   ctx.roundRect(16, 24, 480, 112, 16)
   ctx.fill()
   ctx.fillStyle = '#f4f0e8'
-  ctx.font = '600 44px "DM Sans", system-ui, sans-serif'
+  ctx.font = '600 40px "DM Sans", system-ui, sans-serif'
   ctx.textAlign = 'center'
   ctx.textBaseline = 'middle'
   ctx.fillText(room.name, 256, 64)
-  ctx.font = '500 28px "DM Sans", system-ui, sans-serif'
+  ctx.font = '500 26px "DM Sans", system-ui, sans-serif'
   ctx.fillStyle = 'rgba(244, 240, 232, 0.78)'
   ctx.fillText(`${w.toFixed(0)}×${d.toFixed(0)} m · ${m2} m²`, 256, 108)
 
@@ -57,7 +59,7 @@ function makeRoomLabel(room, y, tone = 'l1') {
     new THREE.SpriteMaterial({ map: tex, transparent: true, depthTest: false }),
   )
   const span = Math.min(w, d, 6)
-  const scale = Math.max(2.2, Math.min(span * 0.85, 5.5))
+  const scale = Math.max(2.4, Math.min(span * 0.9, 6))
   sprite.scale.set(scale, scale * (160 / 512), 1)
   sprite.position.set((room.x0 + room.x1) / 2, y, (room.z0 + room.z1) / 2)
   sprite.renderOrder = 10
@@ -66,34 +68,34 @@ function makeRoomLabel(room, y, tone = 'l1') {
 
 function makeTitle(text, sub, x, z) {
   const canvas = document.createElement('canvas')
-  canvas.width = 768
+  canvas.width = 900
   canvas.height = 160
   const ctx = canvas.getContext('2d')
   ctx.clearRect(0, 0, canvas.width, canvas.height)
   ctx.fillStyle = '#1a2430'
-  ctx.font = '600 52px Fraunces, Georgia, serif'
+  ctx.font = '600 48px Fraunces, Georgia, serif'
   ctx.textAlign = 'center'
   ctx.textBaseline = 'middle'
-  ctx.fillText(text, 384, 58)
-  ctx.font = '500 28px "DM Sans", system-ui, sans-serif'
+  ctx.fillText(text, 450, 55)
+  ctx.font = '500 26px "DM Sans", system-ui, sans-serif'
   ctx.fillStyle = 'rgba(26, 36, 48, 0.7)'
-  ctx.fillText(sub, 384, 112)
+  ctx.fillText(sub, 450, 110)
 
   const tex = new THREE.CanvasTexture(canvas)
   tex.colorSpace = THREE.SRGBColorSpace
   const sprite = new THREE.Sprite(
     new THREE.SpriteMaterial({ map: tex, transparent: true, depthTest: false }),
   )
-  sprite.scale.set(14, 14 * (160 / 768), 1)
-  sprite.position.set(x, 0.3, z)
+  sprite.scale.set(18, 18 * (160 / 900), 1)
+  sprite.position.set(x, 0.35, z)
   sprite.renderOrder = 12
   return sprite
 }
 
-function addPlate(parent, color) {
+function addPlate(parent, color, z0 = PLAN_META.envelope.z0, z1 = PLAN_META.envelope.z1) {
   const env = PLAN_META.envelope
   const plate = new THREE.Mesh(
-    new THREE.PlaneGeometry(env.x1 - env.x0, env.z1 - env.z0),
+    new THREE.PlaneGeometry(env.x1 - env.x0, z1 - z0),
     new THREE.MeshBasicMaterial({
       color,
       transparent: true,
@@ -102,7 +104,7 @@ function addPlate(parent, color) {
     }),
   )
   plate.rotation.x = -Math.PI / 2
-  plate.position.set((env.x0 + env.x1) / 2, 0.001, (env.z0 + env.z1) / 2)
+  plate.position.set((env.x0 + env.x1) / 2, 0.001, (z0 + z1) / 2)
   parent.add(plate)
 }
 
@@ -137,7 +139,7 @@ function addJoinDots(parent, walls, report) {
       seen.add(k)
       const orphan = orphanSet.has(k)
       const dot = new THREE.Mesh(
-        new THREE.SphereGeometry(orphan ? 0.12 : 0.08, 10, 10),
+        new THREE.SphereGeometry(orphan ? 0.12 : 0.07, 8, 8),
         new THREE.MeshBasicMaterial({ color: orphan ? 0xc47a3a : 0x3d6b4f }),
       )
       dot.position.set(x, 0.08, z)
@@ -146,30 +148,8 @@ function addJoinDots(parent, walls, report) {
   }
 }
 
-function buildL1Sheet(report) {
-  const sheet = new THREE.Group()
-  sheet.name = 'plan-l1'
-  sheet.position.x = sheetOffsetX(1)
-
-  const env = PLAN_META.envelope
-  addPlate(sheet, 0xd8d2c6)
-
-  // L1 terrace strip north of glass
-  const t = PLAN_META.terrace
-  const terrace = new THREE.Mesh(
-    new THREE.PlaneGeometry(t.x1 - t.x0, t.z1 - t.z0),
-    new THREE.MeshBasicMaterial({
-      color: 0xc5d0b8,
-      transparent: true,
-      opacity: 0.5,
-      side: THREE.DoubleSide,
-    }),
-  )
-  terrace.rotation.x = -Math.PI / 2
-  terrace.position.set((t.x0 + t.x1) / 2, 0.0015, (t.z0 + t.z1) / 2)
-  sheet.add(terrace)
-
-  for (const room of ALL_PLAN_ROOMS.filter((r) => r.level === 1)) {
+function addRooms(parent, level, tone) {
+  for (const room of ALL_PLAN_ROOMS.filter((r) => r.level === level)) {
     const w = room.x1 - room.x0
     const d = room.z1 - room.z0
     if (w <= 0 || d <= 0) continue
@@ -185,54 +165,8 @@ function buildL1Sheet(report) {
       )
       mesh.rotation.x = -Math.PI / 2
       mesh.position.set((room.x0 + room.x1) / 2, 0.002, (room.z0 + room.z1) / 2)
-      sheet.add(mesh)
-    }
-    sheet.add(makeRoomLabel(room, 0.06, 'l1'))
-  }
-
-  const walls = ALL_WALLS.filter((w) => w.level === 1)
-  addWalls(sheet, walls)
-  addJoinDots(sheet, walls, report)
-
-  sheet.add(
-    makeTitle(
-      'Level 1 — Main living',
-      `${PLAN_META.plateW} × ${PLAN_META.plateD} m plate`,
-      (env.x0 + env.x1) / 2,
-      env.z1 + 3.5,
-    ),
-  )
-
-  return sheet
-}
-
-function buildL2Sheet(report) {
-  const sheet = new THREE.Group()
-  sheet.name = 'plan-l2'
-  sheet.position.x = sheetOffsetX(2)
-
-  const env = PLAN_META.envelope
-  addPlate(sheet, 0xd2d8cc)
-
-  for (const room of ALL_PLAN_ROOMS.filter((r) => r.level === 2)) {
-    const w = room.x1 - room.x0
-    const d = room.z1 - room.z0
-    if (w <= 0 || d <= 0) continue
-    if (!room.outdoor) {
-      const mesh = new THREE.Mesh(
-        new THREE.PlaneGeometry(w, d),
-        new THREE.MeshBasicMaterial({
-          color: room.stair ? 0xb8c4b0 : 0xe4ebe0,
-          transparent: true,
-          opacity: 0.45,
-          side: THREE.DoubleSide,
-        }),
-      )
-      mesh.rotation.x = -Math.PI / 2
-      mesh.position.set((room.x0 + room.x1) / 2, 0.002, (room.z0 + room.z1) / 2)
-      sheet.add(mesh)
-    } else if (room.id !== 'rooftop') {
-      // sundeck / summer as tinted zones on the deck
+      parent.add(mesh)
+    } else if (room.id !== 'rooftop' && room.id !== 'terrace-n' && room.id !== 'terrace2-n') {
       const mesh = new THREE.Mesh(
         new THREE.PlaneGeometry(w, d),
         new THREE.MeshBasicMaterial({
@@ -244,79 +178,121 @@ function buildL2Sheet(report) {
       )
       mesh.rotation.x = -Math.PI / 2
       mesh.position.set((room.x0 + room.x1) / 2, 0.003, (room.z0 + room.z1) / 2)
-      sheet.add(mesh)
+      parent.add(mesh)
     }
-    sheet.add(makeRoomLabel(room, 0.06, 'l2'))
+    parent.add(makeRoomLabel(room, 0.06, tone))
   }
+}
 
-  for (const [key, rect] of Object.entries(WATER)) {
-    const mesh = new THREE.Mesh(
-      new THREE.PlaneGeometry(rect.x1 - rect.x0, rect.z1 - rect.z0),
+function buildSheet(level, title, sub, tone, plateColor, report) {
+  const sheet = new THREE.Group()
+  sheet.name = `plan-l${level}`
+  sheet.position.x = sheetOffsetX(level)
+
+  const env = PLAN_META.envelope
+  if (level === 3) {
+    addPlate(sheet, plateColor, -13, 13)
+  } else {
+    addPlate(sheet, plateColor)
+    const t = PLAN_META.terrace
+    const terrace = new THREE.Mesh(
+      new THREE.PlaneGeometry(t.x1 - t.x0, t.z1 - t.z0),
       new THREE.MeshBasicMaterial({
-        color: key === 'spa' ? 0x5aa8b8 : 0x3a7ca5,
+        color: 0xc5d0b8,
         transparent: true,
         opacity: 0.5,
         side: THREE.DoubleSide,
       }),
     )
-    mesh.rotation.x = -Math.PI / 2
-    mesh.position.set((rect.x0 + rect.x1) / 2, 0.01, (rect.z0 + rect.z1) / 2)
-    sheet.add(mesh)
-    sheet.add(
-      makeRoomLabel(
-        {
-          name: key === 'spa' ? 'Spa' : 'Pool',
-          x0: rect.x0,
-          x1: rect.x1,
-          z0: rect.z0,
-          z1: rect.z1,
-        },
-        0.08,
-        'l2',
-      ),
-    )
+    terrace.rotation.x = -Math.PI / 2
+    terrace.position.set((t.x0 + t.x1) / 2, 0.0015, (t.z0 + t.z1) / 2)
+    sheet.add(terrace)
   }
 
-  const walls = ALL_WALLS.filter((w) => w.level === 2)
+  addRooms(sheet, level, tone)
+
+  if (level === 3) {
+    for (const [key, rect] of Object.entries(WATER)) {
+      const mesh = new THREE.Mesh(
+        new THREE.PlaneGeometry(rect.x1 - rect.x0, rect.z1 - rect.z0),
+        new THREE.MeshBasicMaterial({
+          color: key === 'spa' ? 0x5aa8b8 : 0x3a7ca5,
+          transparent: true,
+          opacity: 0.5,
+          side: THREE.DoubleSide,
+        }),
+      )
+      mesh.rotation.x = -Math.PI / 2
+      mesh.position.set((rect.x0 + rect.x1) / 2, 0.01, (rect.z0 + rect.z1) / 2)
+      sheet.add(mesh)
+      sheet.add(
+        makeRoomLabel(
+          {
+            name: key === 'spa' ? 'Spa' : 'Pool',
+            x0: rect.x0,
+            x1: rect.x1,
+            z0: rect.z0,
+            z1: rect.z1,
+          },
+          0.08,
+          'l3',
+        ),
+      )
+    }
+  }
+
+  const walls = ALL_WALLS.filter((w) => w.level === level)
   addWalls(sheet, walls)
   addJoinDots(sheet, walls, report)
 
-  sheet.add(
-    makeTitle(
-      'Level 2 — Roof terrace',
-      'Pavilion · pool · spa · summer kitchen',
-      (env.x0 + env.x1) / 2,
-      env.z1 + 3.5,
-    ),
-  )
-
+  sheet.add(makeTitle(title, sub, (env.x0 + env.x1) / 2, env.z1 + 4))
   return sheet
 }
 
 export function createPlanDebug() {
   const root = new THREE.Group()
   root.name = 'plan-debug'
-
   const report = validateWallJoins()
   console.info('[plan] wall join check', report)
 
-  const l1 = buildL1Sheet(report)
-  const l2 = buildL2Sheet(report)
-  root.add(l1)
-  root.add(l2)
+  const l1 = buildSheet(
+    1,
+    'Level 1 — Main living',
+    'Full floor · great room · kitchen · dining · family',
+    'l1',
+    0xd8d2c6,
+    report,
+  )
+  const l2 = buildSheet(
+    2,
+    'Level 2 — Private suites',
+    'Full floor · primary + 5 bedrooms · his & her baths',
+    'l2',
+    0xd2d8cc,
+    report,
+  )
+  const l3 = buildSheet(
+    3,
+    'Roof — Terrace',
+    'Pool · spa · summer kitchen · sundeck',
+    'l3',
+    0xcbd5c8,
+    report,
+  )
 
+  root.add(l1, l2, l3)
+
+  const plateW = PLAN_META.envelope.x1 - PLAN_META.envelope.x0
+  const midX = plateW + SHEET_GAP
   const env = PLAN_META.envelope
-  const plateW = env.x1 - env.x0
-  const midX = (plateW + SHEET_GAP) / 2
 
   return {
     root,
     report,
-    sheets: { l1, l2 },
-    /** Camera framing for both sheets */
+    sheets: { l1, l2, l3 },
     frame: {
       target: { x: midX, y: 0, z: (env.z0 + env.z1) / 2 },
-      position: { x: midX, y: 55, z: 36 },
+      position: { x: midX, y: 72, z: 48 },
     },
   }
 }

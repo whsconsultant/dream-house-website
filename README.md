@@ -1,13 +1,14 @@
 # Dream House
 
-Duplex penthouse built **layer by layer**.
+Full-floor duplex penthouse built **layer by layer**.
 
 ## Current layer
 
-**Layer 2 — Plan data:** two separate floor plans (Level 1 main · Level 2 roof), side by side — not overlaid. Room labels with sizes. Wall joins validated.
+**Layer 2 — Plan data:** St. Regis Miami **UPH A + UPH B combined into one house** (no A/B neighbor).
 
-- Dark lines = exterior · blue = glass · bronze = interior · green dots = shared joints · amber = free ends
-- Orbit to inspect (drag / scroll)
+- **46 × 26 m** full-floor plate (~1,196 m² each level)
+- Three separate plans: **Level 1 Main · Level 2 Suites · Roof**
+- Wall joins validated (auto-split at T-junctions)
 
 ## Run
 
