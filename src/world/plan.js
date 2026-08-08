@@ -71,7 +71,7 @@ export const L1_ROOMS = [
   { id: 'kitchen', name: 'Kitchen', level: 1, x0: 8, x1: 18, z0: -10, z1: 0, note: 'Open to great room' },
   { id: 'pantry', name: 'Pantry', level: 1, x0: 14, x1: 18, z0: 0, z1: 4, note: '' },
   { id: 'office', name: 'Office', level: 1, x0: 8, x1: 14, z0: 0, z1: 6, note: '' },
-  { id: 'powder', name: 'Powder', level: 1, x0: 3, x1: 6, z0: 5, z1: 8, note: '' },
+  { id: 'powder', name: 'Powder', level: 1, x0: 3, x1: 6, z0: 5, z1: 8, note: 'Door from great room' },
   { id: 'stairs', name: 'Stair', level: 1, x0: 6, x1: 11, z0: 5, z1: 11, note: '', stair: true },
   { id: 'laundry', name: 'Laundry', level: 1, x0: 11, x1: 16, z0: 8, z1: 11, note: '' },
   {
@@ -187,12 +187,13 @@ export const L1_INTERIOR_WALLS = [
     openings: [{ id: 'to-living', t: 3, width: 3.2, type: 'opening' }],
   }),
 
-  // Service core block: x 3..16, z 5..11
-  W('core-w', 3, 5, 3, 8),
-  W('core-s', 3, 5, 11, 5),
-  W('pow-e', 6, 5, 6, 8, {
+  // Service core: powder opens from the great room (not through the stair)
+  W('core-w', 3, 5, 3, 8, {
     openings: [{ id: 'powder', t: 1.5, width: 0.8, type: 'door' }],
   }),
+  W('core-s', 3, 5, 11, 5),
+  W('pow-e', 6, 5, 6, 8), // solid | stair
+  W('pow-n', 3, 8, 6, 8), // solid toward foyer flank
   W('st-e', 11, 5, 11, 11),
   W('st-n', 6, 11, 11, 11),
   W('st-open', 6, 5, 6, 11, {
