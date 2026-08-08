@@ -234,7 +234,7 @@ export function createPlanDebug() {
   const l1 = buildSheet(
     1,
     'Level 1 — Live',
-    'Open great room + kitchen · service core by entry',
+    'Living · dining · kitchen open · coat · service core',
     'l1',
     mats,
     report,
@@ -242,7 +242,7 @@ export function createPlanDebug() {
   const l2 = buildSheet(
     2,
     'Level 2 — Sleep',
-    'Primary west · two guests east · short landing',
+    'Primary + sitting · 2 guests · short landing',
     'l2',
     mats,
     report,
@@ -270,8 +270,8 @@ export function createPlanDebug() {
     mats,
     sheets: { l1, l2, l3 },
     titles: {
-      l1: 'Level 1 — Open living (no corridor maze)',
-      l2: 'Level 2 — Primary + 2 guests',
+      l1: 'Level 1 — Living · dining · kitchen (tighter plate)',
+      l2: 'Level 2 — Primary + sitting · 2 guests',
       l3: 'Roof — Pool terrace',
     },
     frame: {
